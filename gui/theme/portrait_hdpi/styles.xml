@@ -1,0 +1,235 @@
+<?xml version="1.0"?>
+
+<recovery>
+	<styles>
+		<style name="text_ab_title">
+			<font resource="title" color="%text_actionbar%"/>
+		</style>
+
+		<style name="text_ab_subtitle">
+			<font resource="body1" color="%text_actionbar%"/>
+		</style>
+
+		<style name="text_dlg_title">
+			<font resource="title" color="%text%"/>
+		</style>
+
+		<style name="text_input_fail">
+			<font resource="input_fail" color="%text_fail%"/>
+		</style>
+
+		<style name="text_status">
+			<font resource="status" color="%text%"/>
+		</style>
+
+		<style name="text_status_fail">
+			<font resource="status" color="%text_fail%"/>
+		</style>
+
+		<style name="text_body1">
+			<font resource="body1" color="%text%"/>
+		</style>
+
+		<style name="text_body1_hl">
+			<font resource="body1" color="%accent%"/>
+		</style>
+
+		<style name="text_body1_fail">
+			<font resource="body1" color="%text_fail%"/>
+		</style>
+
+		<style name="text_body2">
+			<font resource="body1" color="%text%"/>
+		</style>
+
+		<style name="text_body2_dark">
+			<font resource="body1" color="%text_dark%"/>
+		</style>
+
+		<style name="text_body2_hl">
+			<font resource="body1" color="%accent%"/>
+		</style>
+
+		<style name="text_body2_fail">
+			<font resource="body1" color="%text_fail%"/>
+		</style>
+
+		<style name="caption">
+			<font resource="caption" color="%text_light%"/>
+		</style>
+
+		<style name="caption_hl">
+			<font resource="caption" color="%accent%"/>
+		</style>
+
+		<style name="icon_mb_solid">
+			<fill color="%accent%"/>
+		</style>
+
+		<style name="menu_text">
+			<font resource="menu" color="%text%"/>
+		</style>
+
+		<style name="menu_text_hl">
+			<font resource="menu" color="%accent%"/>
+		</style>
+
+		<style name="menu_btn">
+			<highlight color="%highlight_color%" />
+			<fill color="%transparent%"/>
+		</style>
+
+		<style name="mb_text">
+			<font resource="mainbutton" color="%text_button%"/>
+		</style>
+
+		<style name="mb_btn">
+			<highlight color="%highlight_color%"/>
+			<fill color="%transparent%"/>
+		</style>
+
+		<style name="bs_text">
+			<font resource="button" color="%text_button%"/>
+		</style>
+
+		<style name="bs_btn">
+			<highlight color="%highlight_color%"/>
+			<fill color="%transparent%"/>
+		</style>
+
+		<style name="btn_raised">
+			<highlight color="%highlight_color%"/>
+			<font resource="button" color="%text%"/>
+			<image resource="btn_raised"/>
+		</style>
+
+		<style name="btn_raised_warn">
+			<highlight color="%highlight_color%"/>
+			<font resource="button" color="%text%"/>
+			<image resource="btn_raised_warn"/>
+		</style>
+
+		<style name="btn_raised_hl">
+			<highlight color="%highlight_color%"/>
+			<font resource="button" color="%text%"/>
+			<image resource="btn_raised_hl"/>
+		</style>
+
+		<style name="btn_flat_fw">
+			<highlight color="%highlight_color%"/>
+			<font resource="button" color="%text_dark%"/>
+			<image resource="btn_flat_fw"/>
+		</style>
+
+		<style name="btn_flat_qw">
+			<highlight color="%highlight_color%"/>
+			<font resource="button" color="%text_dark%"/>
+			<image resource="btn_flat_qw"/>
+		</style>
+
+		<style name="navigate_left">
+			<highlight color="%highlight_color%"/>
+			<image resource="navigate_left"/>
+		</style>
+
+		<style name="navigate_right">
+			<highlight color="%highlight_color%"/>
+			<image resource="navigate_right"/>
+		</style>
+
+		<style name="navigate_accept">
+			<highlight color="%highlight_color%"/>
+			<image resource="navigate_accept"/>
+		</style>
+
+		<style name="btn_dlg">
+			<highlight color="%highlight_color%"/>
+			<font resource="button" color="%text_button%"/>
+			<image resource="db_empty" highlightresource="db_hl" />
+		</style>
+
+		<style name="btn_dlg_hl">
+			<highlight color="%highlight_color%"/>
+			<font resource="button" color="%accent%"/>
+			<image resource="db_empty" highlightresource="db_hl" />
+		</style>
+
+		<style name="settingslist">
+			<background color="%background%"/>
+			<fastscroll rectcolor="%accent%" w="%fastscroll_w%" rectw="%fastscroll_rectw%" recth="%fastscroll_recth%" />
+			<icon selected="checkbox_true" unselected="checkbox_false"/>
+			<font resource="body1" spacing="%fileselector_spacing%" color="%text%" highlightcolor="%accent%"/>
+		</style>
+
+		<style name="listbox">
+			<background color="%background%"/>
+			<fastscroll rectcolor="%accent%" w="%fastscroll_w%" rectw="%fastscroll_rectw%" recth="%fastscroll_recth%" />
+			<icon selected="radio_true" unselected="radio_false" />
+			<font resource="body1" spacing="%fileselector_spacing%" color="%text%" highlightcolor="%accent%" />
+		</style>
+
+		<style name="textbox">
+			<background color="%background%"/>
+			<fastscroll rectcolor="%accent%" w="%fastscroll_w%" rectw="%fastscroll_rectw%" recth="%fastscroll_recth%" />
+			<font resource="body1" spacing="%textbox_spacing%" color="%text%" />
+		</style>
+
+		<style name="checkbox_big">
+				<font resource="body1" color="%text%"/>
+				<image checked="checkbox_true" unchecked="checkbox_false"/>
+		</style>
+
+		<style name="checkbox_small">
+				<font resource="body1" color="%text%"/>
+				<image checked="checkbox_true_d" unchecked="checkbox_false_d"/>
+		</style>
+
+		<style name="partitionlist">
+			<background color="%background%"/>
+			<fastscroll rectcolor="%accent%" w="%fastscroll_w%" rectw="%fastscroll_rectw%" recth="%fastscroll_recth%" />
+			<icon selected="checkbox_true" unselected="checkbox_false" />
+			<font resource="body1" spacing="%fileselector_spacing%" color="%text%" highlightcolor="%accent%" />
+		</style>
+
+		<style name="partitionlist_dialog">
+			<background color="%background%"/>
+			<fastscroll rectcolor="%accent%" w="%fastscroll_w%" rectw="%fastscroll_rectw%" recth="%fastscroll_recth%" />
+			<icon selected="radio_true_d" unselected="radio_false_d" />
+			<font resource="body1" spacing="%fileselector_spacing%" color="%text%" highlightcolor="%accent%" />
+		</style>
+
+		<style name="partitionlist_radio">
+			<background color="%background%"/>
+			<fastscroll rectcolor="%accent%" w="%fastscroll_w%" rectw="%fastscroll_rectw%" recth="%fastscroll_recth%" />
+			<icon selected="radio_true" unselected="radio_false" />
+			<font resource="body1" spacing="%fileselector_spacing%" color="%text%" highlightcolor="%accent%" />
+		</style>
+
+		<style name="fileselector_b">
+			<fastscroll rectcolor="%accent%" w="%fastscroll_w%" rectw="%fastscroll_rectw%" recth="%fastscroll_recth%" />
+			<separator color="%linecolor%" height="%fileselector_separatorheight%" />
+			<icon folder="folder_icon" file="file_icon" />
+			<background color="%background%" />
+			<font resource="status" spacing="%fileselector_spacing%" color="%text%" highlightcolor="%accent%" />
+		</style>
+
+		<style name="fileselector_s">
+			<fastscroll rectcolor="%accent%" w="%fastscroll_w%" rectw="%fastscroll_rectw%" recth="%fastscroll_recth%" />
+			<separator color="%linecolor%" height="%fileselector_separatorheight%" />
+			<icon folder="folder_icon" file="file_icon" />
+			<background color="%background%" />
+			<font resource="caption" spacing="%fileselector_spacing%" color="%text%" highlightcolor="%accent%" />
+		</style>
+
+		<style name="terminal">
+			<fastscroll rectcolor="%accent%" w="%fastscroll_w%" rectw="%fastscroll_rectw%" recth="%fastscroll_recth%"/>
+			<background color="%background%"/>
+			<font resource="fixed" spacing="3" color="%text%"/>
+		</style>
+
+		<style name="slider">
+			<placement x="%center_x%" y="%slider_y%" placement="5"/>
+			<resource base="slider" used="slider_used" touch="handle_h"/>
+		</style>
+	</styles>
+</recovery>

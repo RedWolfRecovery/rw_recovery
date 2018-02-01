@@ -1830,24 +1830,26 @@ bool TWPartition::Backup(PartitionSettings *part_settings, pid_t *tar_fork_pid) 
 }
 
 bool TWPartition::Restore(PartitionSettings *part_settings) {
+	if (DataManager::GetIntValue(RW_RUN_SURVIVAL_BACKUP) != 1) {
 	TWFunc::GUI_Operation_Text(TW_RESTORE_TEXT, Display_Name, gui_parse_text("{@restoring_hdr}"));
 	LOGINFO("Restore filename is: %s/%s\n", part_settings->Backup_Folder.c_str(), Backup_FileName.c_str());
-
+    }
 	string Restore_File_System = Get_Restore_File_System(part_settings);
 
 	if (Is_File_System(Restore_File_System))
 		return Restore_Tar(part_settings);
 	else if (Is_Image(Restore_File_System))
 		return Restore_Image(part_settings);
-
+		
 	LOGERR("Unknown restore method for '%s'\n", Mount_Point.c_str());
 	return false;
 }
 
 string TWPartition::Get_Restore_File_System(PartitionSettings *part_settings) {
 	size_t first_period, second_period;
-	string Restore_File_System;
-
+       string Restore_File_System;
+	   
+	   
 	// Parse backup filename to extract the file system before wiping
 	first_period = Backup_FileName.find(".");
 	if (first_period == string::npos) {
@@ -2057,6 +2059,7 @@ bool TWPartition::Wipe_EXT4() {
 	int ret;
 	char *secontext = NULL;
 
+    if (DataManager::GetIntValue(RW_RUN_SURVIVAL_BACKUP) != 1)
 	gui_msg(Msg("formatting_using=Formatting {1} using {2}...")(Display_Name)("make_ext4fs"));
 
 	if (!selinux_handle || selabel_lookup(selinux_handle, &secontext, Mount_Point.c_str(), S_IFDIR) < 0) {
@@ -2079,6 +2082,7 @@ bool TWPartition::Wipe_EXT4() {
 	if (TWFunc::Path_Exists("/sbin/make_ext4fs")) {
 		string Command;
 
+        if (DataManager::GetIntValue(RW_RUN_SURVIVAL_BACKUP) != 1)
 		gui_msg(Msg("formatting_using=Formatting {1} using {2}...")(Display_Name)("make_ext4fs"));
 		Find_Actual_Block_Device();
 		Command = "make_ext4fs";
@@ -2333,9 +2337,11 @@ bool TWPartition::Backup_Tar(PartitionSettings *part_settings, pid_t *tar_fork_p
 	if (!Mount(true))
 		return false;
 
+	if (DataManager::GetIntValue(RW_RUN_SURVIVAL_BACKUP) != 1) {
 	TWFunc::GUI_Operation_Text(TW_BACKUP_TEXT, Backup_Display_Name, "Backing Up");
 	gui_msg(Msg("backing_up=Backing up {1}...")(Backup_Display_Name));
-
+	}
+	
 	DataManager::GetValue(TW_USE_COMPRESSION_VAR, tar.use_compression);
 
 #ifndef TW_EXCLUDE_ENCRYPTED_BACKUPS
@@ -2369,11 +2375,15 @@ bool TWPartition::Backup_Tar(PartitionSettings *part_settings, pid_t *tar_fork_p
 	return true;
 }
 
+
+
 bool TWPartition::Backup_Image(PartitionSettings *part_settings) {
 	string Full_FileName, adb_file_name;
 
+	if (DataManager::GetIntValue(RW_RUN_SURVIVAL_BACKUP) != 1) {
 	TWFunc::GUI_Operation_Text(TW_BACKUP_TEXT, Display_Name, gui_parse_text("{@backing}"));
 	gui_msg(Msg("backing_up=Backing up {1}...")(Backup_Display_Name));
+    }
 
 	Backup_FileName = Backup_Name + "." + Current_File_System + ".win";
 
@@ -2500,9 +2510,11 @@ exit:
 bool TWPartition::Backup_Dump_Image(PartitionSettings *part_settings) {
 	string Full_FileName, Command;
 
+	if (DataManager::GetIntValue(RW_RUN_SURVIVAL_BACKUP) != 1) {
 	TWFunc::GUI_Operation_Text(TW_BACKUP_TEXT, Display_Name, gui_parse_text("{@backing}"));
 	gui_msg(Msg("backing_up=Backing up {1}...")(Backup_Display_Name));
-
+    }
+	
 	if (part_settings->progress)
 		part_settings->progress->SetPartitionSize(Backup_Size);
 
@@ -2570,7 +2582,9 @@ bool TWPartition::Restore_Tar(PartitionSettings *part_settings) {
 		if (!Wipe_AndSec())
 			return false;
 	} else {
+		if (DataManager::GetIntValue(RW_RUN_SURVIVAL_BACKUP) != 1) {
 		gui_msg(Msg("wiping=Wiping {1}")(Backup_Display_Name));
+		}
 		if (Has_Data_Media && Mount_Point == "/data" && Restore_File_System != Current_File_System) {
 			gui_msg(Msg(msg::kWarning, "datamedia_fs_restore=WARNING: This /data backup was made with {1} file system! The backup may not boot unless you change back to {1}.")(Restore_File_System));
 			if (!Wipe_Data_Without_Wiping_Media())
@@ -2580,8 +2594,10 @@ bool TWPartition::Restore_Tar(PartitionSettings *part_settings) {
 				return false;
 		}
 	}
+	if (DataManager::GetIntValue(RW_RUN_SURVIVAL_BACKUP) != 1) {
 	TWFunc::GUI_Operation_Text(TW_RESTORE_TEXT, Backup_Display_Name, gui_parse_text("{@restoring_hdr}"));
 	gui_msg(Msg("restoring=Restoring {1}...")(Backup_Display_Name));
+     }
 
 	// Remount as read/write as needed so we can restore the backup
 	if (!ReMount_RW(true))
@@ -2634,9 +2650,11 @@ bool TWPartition::Restore_Image(PartitionSettings *part_settings) {
 	string Full_FileName;
 	string Restore_File_System = Get_Restore_File_System(part_settings);
 
+	if (DataManager::GetIntValue(RW_RUN_SURVIVAL_BACKUP) != 1) {
 	TWFunc::GUI_Operation_Text(TW_RESTORE_TEXT, Backup_Display_Name, gui_parse_text("{@restoring_hdr}"));
 	gui_msg(Msg("restoring=Restoring {1}...")(Backup_Display_Name));
-
+    }
+	
 	if (part_settings->adbbackup)
 		Full_FileName = TW_ADB_RESTORE;
 	else

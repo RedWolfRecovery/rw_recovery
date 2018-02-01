@@ -289,6 +289,7 @@ protected:
 	void simulate_progress_bar(void);
 	int flash_zip(std::string filename, int* wipe_cache);
 	void reinject_after_flash();
+	void notify_after_install();
 	void operation_start(const string operation_name);
 	void operation_end(const int operation_status);
 	time_t Start;
@@ -324,7 +325,8 @@ protected:
 	int generatebackupname(std::string arg);
 	int checkpartitionlist(std::string arg);
 	int getpartitiondetails(std::string arg);
-	int screenshot(std::string arg);
+	int screenshotinternal(std::string arg);
+	int screenshotexternal(std::string arg);
 	int setbrightness(std::string arg);
 	int checkforapp(std::string arg);
 
@@ -367,6 +369,16 @@ protected:
 	int twcmd(std::string arg);
 	int setbootslot(std::string arg);
 	int installapp(std::string arg);
+       int flashlight(std::string arg);
+	int adb(std::string arg);
+	int disableinstallled(std::string arg);
+    int disablebackupled(std::string arg);
+	int disablerestoreled(std::string arg);
+	int removepassword(std::string arg);
+	int setpassword(std::string arg);
+	int changesplash(std::string arg);
+	int wlfx(std::string arg);
+	int wlfw(std::string arg);
 
 	int simulate;
 };

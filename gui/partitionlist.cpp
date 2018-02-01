@@ -281,3 +281,4 @@ void GUIPartitionList::NotifySelect(size_t item_selected)
 		}
 	}
 }
+

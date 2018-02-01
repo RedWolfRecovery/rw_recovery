@@ -525,8 +525,7 @@ void DataManager::SetBackupFolder()
 {
 	string str = GetCurrentStoragePath();
 	TWPartition* partition = PartitionManager.Find_Partition_By_Path(str);
-	str += "/TWRP/BACKUPS/";
-
+	str += "/WOLF/.ZALOHY/";
 	string dev_id;
 	GetValue("device_id", dev_id);
 
@@ -576,7 +575,7 @@ void DataManager::SetDefaultValues()
 	mConst.SetValue("true", "1");
 	mConst.SetValue("false", "0");
 
-	mConst.SetValue(TW_VERSION_VAR, TW_VERSION_STR);
+	mConst.SetValue(TW_VERSION_VAR, RW_VERSION);
 	mPersist.SetValue("tw_button_vibrate", "80");
 	mPersist.SetValue("tw_keyboard_vibrate", "40");
 	mPersist.SetValue("tw_action_vibrate", "160");
@@ -607,7 +606,7 @@ void DataManager::SetDefaultValues()
 
 	str = GetCurrentStoragePath();
 	mPersist.SetValue(TW_ZIP_LOCATION_VAR, str);
-	str += "/TWRP/BACKUPS/";
+	str += "/WOLF/.ZALOHY/";
 
 	string dev_id;
 	mConst.GetValue("device_id", dev_id);
@@ -724,12 +723,82 @@ void DataManager::SetDefaultValues()
 	mConst.SetValue(TW_MIN_SYSTEM_VAR, TW_MIN_SYSTEM_SIZE);
 	mData.SetValue(TW_BACKUP_NAME, "(Auto Generate)");
 
+     // Start of the RedWolf variables
+
+     mData.SetValue(RW_INSTALL_PREBUILT_ZIP, "0");
+     mData.SetValue(RW_CALL_DEACTIVATION, "0");
+     mData.SetValue(RW_GOVERNOR_STABLE, "interactive");
+     mData.SetValue(RW_RUN_SURVIVAL_BACKUP, "0");
+     mData.SetValue(RW_METADATA_PRE_BUILD, "0");
+	 mData.SetValue(RW_INCREMENTAL_OTA_FAIL, "0");
+	 mData.SetValue(RW_PASSWORD_VARIABLE, "dd");
+	 mData.SetValue(RW_LOADED_FINGERPRINT, "0");
+     mData.SetValue(RW_MIUI_ZIP_TMP, "0");
+     mData.SetValue(RW_FLASHLIGHT_VAR, "0");
+          
+     mPersist.SetValue(RW_DISABLE_BOOT_CHK, "0");
+     mPersist.SetValue(RW_DO_SYSTEM_ON_OTA, "1");
+	 mPersist.SetValue("wolf_verify_incremental_ota_signature", "0");
+     mPersist.SetValue(RW_ADVANCED_STOCK_REPLACE, "1");
+     mPersist.SetValue(RW_DISABLE_SECURE_BOOT, "0");
+     mPersist.SetValue(RW_DISABLE_MOCK_LOCATION, "0");  
+     mPersist.SetValue(RW_ENABLE_MOCK_LOCATION, "0");  
+     mPersist.SetValue(RW_DISABLE_ADB_RO, "0");
+     mPersist.SetValue(RW_ENABLE_ADB_RO, "0");
+     mPersist.SetValue(RW_ENABLE_SECURE_RO, "0");  
+     mPersist.SetValue(RW_DISABLE_SECURE_RO, "0");  
+     mPersist.SetValue(RW_DONT_REPLACE_STOCK, "0");
+     mPersist.SetValue(RW_ADVANCED_WARN_CHK, "0");       
+     mPersist.SetValue(RW_INCREMENTAL_PACKAGE, "0");    
+     mPersist.SetValue(RW_SAVE_LOAD_AROMAFM, "0");
+     mPersist.SetValue(RW_DISABLE_DEBUGGING, "0"); 
+     mPersist.SetValue(RW_ENABLE_DEBUGGING, "1");     
+     mPersist.SetValue(RW_DISABLE_FORCED_ENCRYPTION, "1");  
+     mPersist.SetValue(RW_DISABLE_DM_VERITY, "1");
+     mPersist.SetValue(RW_REBOOT_AFTER_RESTORE, "0"); 
+     mPersist.SetValue(RW_SUPERSU_CONFIG, "0");
+     mPersist.SetValue(RW_NO_OS_SEARCH_ENGINE, "1"); 
+     mPersist.SetValue(RW_STUPID_COOKIE_SHIT, "0");     
+     mPersist.SetValue(RW_STATUSBAR_ON_LOCK, "1");  
+     mPersist.SetValue(RW_INSTALL_VIBRATE, "150");
+     mPersist.SetValue(RW_BACKUP_VIBRATE, "150"); 
+     mPersist.SetValue(RW_RESTORE_VIBRATE, "150");     
+     mPersist.SetValue(RW_RESTORE_BLUE_LED, "0");   
+     mPersist.SetValue(RW_RESTORE_RED_LED, "0");  
+     mPersist.SetValue(RW_RESTORE_GREEN_LED, "1");
+     mPersist.SetValue(RW_BACKUP_RED_LED, "0"); 
+     mPersist.SetValue(RW_BACKUP_GREEN_LED, "1");     
+     mPersist.SetValue(RW_BACKUP_BLUE_LED, "0");  
+     mPersist.SetValue(RW_INSTALL_RED_LED, "0");
+     mPersist.SetValue(RW_INSTALL_GREEN_LED, "1"); 
+     mPersist.SetValue(RW_INSTALL_BLUE_LED, "0");  
+     mPersist.SetValue(RW_INSTALL_LED_COLOR, "green");
+     mPersist.SetValue(RW_BACKUP_LED_COLOR, "green");     
+     mPersist.SetValue(RW_RESTORE_LED_COLOR, "green");
+     mPersist.SetValue(RW_NOTIFY_AFTER_INSTALL, "0");
+     mPersist.SetValue(RW_NOTIFY_AFTER_BACKUP, "0");
+     mPersist.SetValue(RW_NOTIFY_AFTER_RESTORE, "0");
+     mPersist.SetValue(RW_BALANCE_CHECK, "0");     
+     mPersist.SetValue(RW_FSYNC_CHECK, "0");
+     mPersist.SetValue(RW_T2W_CHECK, "0");
+     mPersist.SetValue(RW_FORCE_FAST_CHARGE_CHECK, "0");
+     mPersist.SetValue(RW_POWERSAVE_CHECK, "0");
+     mPersist.SetValue(RW_PERFORMANCE_CHECK, "0");
+      
+	 mConst.SetValue(RW_SURVIVAL_FOLDER_VAR, RW_SURVIVAL_FOLDER);
+     mConst.SetValue(RW_SURVIVAL_BACKUP_NAME, RW_SURVIVAL_BACKUP);
+     mConst.SetValue(RW_ACTUAL_BUILD_VAR, RW_BUILD);
+     mConst.SetValue(RW_TMP_SCRIPT_DIR, "/tmp/redwolf");  
+     mConst.SetValue(RW_COMPATIBILITY_DEVICE, RW_DEVICE);  
+     
+     // End of the RedWolf variables
+
 	mPersist.SetValue(TW_INSTALL_REBOOT_VAR, "0");
 	mPersist.SetValue(TW_SIGNED_ZIP_VERIFY_VAR, "0");
 	mPersist.SetValue(TW_DISABLE_FREE_SPACE_VAR, "0");
 	mPersist.SetValue(TW_FORCE_DIGEST_CHECK_VAR, "0");
 	mPersist.SetValue(TW_USE_COMPRESSION_VAR, "0");
-	mPersist.SetValue(TW_TIME_ZONE_VAR, "CST6CDT,M3.2.0,M11.1.0");
+	mPersist.SetValue(TW_TIME_ZONE_VAR, "NFT-1");
 	mPersist.SetValue(TW_GUI_SORT_ORDER, "1");
 	mPersist.SetValue(TW_RM_RF_VAR, "0");
 	mPersist.SetValue(TW_SKIP_DIGEST_CHECK_VAR, "0");
@@ -737,9 +806,9 @@ void DataManager::SetDefaultValues()
 	mPersist.SetValue(TW_SDEXT_SIZE, "0");
 	mPersist.SetValue(TW_SWAP_SIZE, "0");
 	mPersist.SetValue(TW_SDPART_FILE_SYSTEM, "ext3");
-	mPersist.SetValue(TW_TIME_ZONE_GUISEL, "CST6;CDT,M3.2.0,M11.1.0");
+	mPersist.SetValue(TW_TIME_ZONE_GUISEL, "NFT-1");
 	mPersist.SetValue(TW_TIME_ZONE_GUIOFFSET, "0");
-	mPersist.SetValue(TW_TIME_ZONE_GUIDST, "1");
+	mPersist.SetValue(TW_TIME_ZONE_GUIDST, "0");
 	mData.SetValue(TW_ACTION_BUSY, "0");
 	mData.SetValue("tw_wipe_cache", "0");
 	mData.SetValue("tw_wipe_dalvik", "0");
@@ -754,7 +823,7 @@ void DataManager::SetDefaultValues()
 	mData.SetValue("tw_terminal_state", "0");
 	mData.SetValue("tw_background_thread_running", "0");
 	mData.SetValue(TW_RESTORE_FILE_DATE, "0");
-	mPersist.SetValue("tw_military_time", "0");
+	mPersist.SetValue("tw_military_time", "1");
 
 #ifdef TW_INCLUDE_CRYPTO
 	mConst.SetValue(TW_USE_SHA2, "1");
@@ -890,8 +959,8 @@ void DataManager::SetDefaultValues()
 	mConst.SetValue("tw_oem_build", "1");
 #else
 	mConst.SetValue("tw_oem_build", "0");
-	mPersist.SetValue("tw_app_prompt", "1");
-	mPersist.SetValue("tw_app_install_system", "1");
+	mPersist.SetValue("tw_app_prompt", "0");
+	mPersist.SetValue("tw_app_install_system", "0");
 	mData.SetValue("tw_app_install_status", "0"); // 0 = no status, 1 = not installed, 2 = already installed
 #endif
 
@@ -1067,8 +1136,8 @@ void DataManager::ReadSettingsFile(void)
 
 	memset(mkdir_path, 0, sizeof(mkdir_path));
 	memset(settings_file, 0, sizeof(settings_file));
-	sprintf(mkdir_path, "%s/TWRP", GetSettingsStoragePath().c_str());
-	sprintf(settings_file, "%s/.twrps", mkdir_path);
+	sprintf(mkdir_path, "%s/WOLF", GetSettingsStoragePath().c_str());
+	sprintf(settings_file, "%s/.wolfs", mkdir_path);
 
 	if (!PartitionManager.Mount_Settings_Storage(false))
 	{

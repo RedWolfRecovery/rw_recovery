@@ -105,24 +105,24 @@ int main(int argc, char **argv) {
 	snprintf(crash_prop_val, sizeof(crash_prop_val), "%d", crash_counter);
 	property_set("twrp.crash_counter", crash_prop_val);
 	property_set("ro.twrp.boot", "1");
-	property_set("ro.twrp.version", TW_VERSION_STR);
+	property_set("ro.twrp.version", RW_VERSION);
 
 	time_t StartupTime = time(NULL);
-	printf("Starting TWRP %s-%s on %s (pid %d)\n", TW_VERSION_STR, TW_GIT_REVISION, ctime(&StartupTime), getpid());
-
+	printf("Starting RED WOLF TWRP %s-%s-%s on %s (pid %d)\n", RW_VERSION, RW_BUILD, TW_GIT_REVISION, ctime(&StartupTime), getpid());
+  
 	// Load default values to set DataManager constants and handle ifdefs
 	DataManager::SetDefaultValues();
 	printf("Starting the UI...\n");
 	gui_init();
 	printf("=> Linking mtab\n");
 	symlink("/proc/mounts", "/etc/mtab");
-	if (TWFunc::Path_Exists("/etc/twrp.fstab")) {
+	if (TWFunc::Path_Exists("/etc/redwolf.fstab")) {
 		if (TWFunc::Path_Exists("/etc/recovery.fstab")) {
 			printf("Renaming regular /etc/recovery.fstab -> /etc/recovery.fstab.bak\n");
 			rename("/etc/recovery.fstab", "/etc/recovery.fstab.bak");
 		}
-		printf("Moving /etc/twrp.fstab -> /etc/recovery.fstab\n");
-		rename("/etc/twrp.fstab", "/etc/recovery.fstab");
+		printf("Moving /etc/redwolf.fstab -> /etc/recovery.fstab\n");
+		rename("/etc/redwolf.fstab", "/etc/recovery.fstab");
 	}
 	printf("=> Processing recovery.fstab\n");
 	if (!PartitionManager.Process_Fstab("/etc/recovery.fstab", 1)) {
@@ -162,14 +162,19 @@ int main(int argc, char **argv) {
 			LOGINFO("Could not check /cache/recovery SELinux contexts, using /sbin/teamwin instead which may be inaccurate.\n");
 			lgetfilecon("/sbin/teamwin", &contexts);
 		}
-		if (!contexts) {
+		
+		if (!contexts) {			
 			gui_warn("no_kernel_selinux=Kernel does not have support for reading SELinux contexts.");
 		} else {
 			free(contexts);
-			gui_msg("full_selinux=Full SELinux support is present.");
-		}
+          	gui_msg("full_selinux=Full SELinux support is present.");
+			}
 	}
-
+            gui_print("**************************");
+		    gui_msg("redwolfms2=[Red Wolf]: Welcome! ^_^");
+		    gui_msg(Msg("redwolfms3=[Version]: '{1}'")(RW_VERSION));
+		    gui_msg(Msg("redwolfms4=[Build]: {1}")(RW_BUILD));
+		    gui_print("**************************");
 	PartitionManager.Mount_By_Path("/cache", false);
 
 	bool Shutdown = false;
@@ -251,13 +256,21 @@ int main(int argc, char **argv) {
 	if (crash_counter == 0) {
 		property_list(Print_Prop, NULL);
 		printf("\n");
+		char fingerprint[PROPERTY_VALUE_MAX];
+        property_get("ro.build.fingerprint", fingerprint, "");
+        std::string fpstr = fingerprint;
+        if (!fpstr.empty()) {
+        usleep(2000000);
+        TWFunc::tw_reboot(rb_recovery);
+        usleep(5000000);
+         }
 	} else {
 		printf("twrp.crash_counter=%d\n", crash_counter);
 	}
 
 	// Check for and run startup script if script exists
-	TWFunc::check_and_run_script("/sbin/runatboot.sh", "boot");
-	TWFunc::check_and_run_script("/sbin/postrecoveryboot.sh", "boot");
+	// TWFunc::check_and_run_script("/sbin/runatboot.sh", "boot");
+	// TWFunc::check_and_run_script("/sbin/postrecoveryboot.sh", "boot"); 
 
 #ifdef TW_INCLUDE_INJECTTWRP
 	// Back up TWRP Ramdisk if needed:
@@ -272,16 +285,14 @@ int main(int argc, char **argv) {
 	LOGINFO("Backup of TWRP ramdisk done.\n");
 #endif
 
+
 	TWFunc::Update_Log_File();
 	// Offer to decrypt if the device is encrypted
 	if (DataManager::GetIntValue(TW_IS_ENCRYPTED) != 0) {
 		LOGINFO("Is encrypted, do decrypt page first\n");
 		if (gui_startPage("decrypt", 1, 1) != 0) {
 			LOGERR("Failed to start decrypt GUI page.\n");
-		} else {
-			// Check for and load custom theme if present
-			gui_loadCustomResources();
-		}
+		} 
 	} else if (datamedia) {
 		if (tw_get_default_metadata(DataManager::GetSettingsStoragePath().c_str()) != 0) {
 			LOGINFO("Failed to get default contexts and file mode for storage files.\n");
@@ -289,6 +300,7 @@ int main(int argc, char **argv) {
 			LOGINFO("Got default contexts and file mode for storage files.\n");
 		}
 	}
+	
 
 	// Read the settings file
 	DataManager::ReadSettingsFile();
@@ -300,9 +312,11 @@ int main(int argc, char **argv) {
 		TWFunc::Fixup_Time_On_Boot();
 
 	// Run any outstanding OpenRecoveryScript
-	if (DataManager::GetIntValue(TW_IS_ENCRYPTED) == 0 && (TWFunc::Path_Exists(SCRIPT_FILE_TMP) || TWFunc::Path_Exists(SCRIPT_FILE_CACHE))) {
+	if (DataManager::GetIntValue(TW_IS_ENCRYPTED) == 0 && TWFunc::Path_Exists(SCRIPT_FILE_TMP) || TWFunc::Path_Exists(SCRIPT_FILE_CACHE)) {
+	    TWFunc::Start_redwolf();
 		OpenRecoveryScript::Run_OpenRecoveryScript();
 	}
+	
 
 #ifdef TW_HAS_MTP
 	char mtp_crash_check[PROPERTY_VALUE_MAX];
@@ -327,11 +341,17 @@ int main(int argc, char **argv) {
 	}
 #endif
 
-#ifndef TW_OEM_BUILD
+
+     TWFunc::Start_redwolf();
+	 if (!TWFunc::User_IS_Pirate_Cunt())
+     DataManager::SetValue(RW_USER_IS_PIRATE, 1);
+     else
+     DataManager::SetValue(RW_USER_IS_PIRATE, 0);
+	 #ifndef TW_OEM_BUILD
 	// Check if system has never been changed
 	TWPartition* sys = PartitionManager.Find_Partition_By_Path("/system");
 	TWPartition* ven = PartitionManager.Find_Partition_By_Path("/vendor");
-
+	
 	if (sys) {
 		if ((DataManager::GetIntValue("tw_mount_system_ro") == 0 && sys->Check_Lifetime_Writes() == 0) || DataManager::GetIntValue("tw_mount_system_ro") == 2) {
 			if (DataManager::GetIntValue("tw_never_show_system_ro_page") == 0) {
@@ -351,17 +371,17 @@ int main(int argc, char **argv) {
 			if (ven)
 				ven->Change_Mount_Read_Only(false);
 		}
-	}
+	}	
 #endif
 	twrpAdbBuFifo *adb_bu_fifo = new twrpAdbBuFifo();
 	adb_bu_fifo->threadAdbBuFifo();
-
+     
 	// Launch the main GUI
 	gui_start();
-
 #ifndef TW_OEM_BUILD
 	// Disable flashing of stock recovery
 	TWFunc::Disable_Stock_Recovery_Replace();
+
 	// Check for su to see if the device is rooted or not
 	if (DataManager::GetIntValue("tw_mount_system_ro") == 0 && PartitionManager.Mount_By_Path("/system", false)) {
 		// read /system/build.prop to get sdk version and do not offer to root if running M or higher (sdk version 23 == M)

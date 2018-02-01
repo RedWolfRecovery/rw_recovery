@@ -312,7 +312,7 @@ int OpenRecoveryScript::run_script_file(void) {
 				} else
 					strcpy(mount, value);
 				if (PartitionManager.UnMount_By_Path(mount, true))
-					gui_msg(Msg("unmounted=Unounted '{1}'")(mount));
+					gui_msg(Msg("unmounted=Unmounted '{1}'")(mount));
 			} else if (strcmp(command, "set") == 0) {
 				// Set value
 				size_t len = strlen(value);
@@ -626,12 +626,16 @@ int OpenRecoveryScript::Run_OpenRecoveryScript_Action() {
 		}
 	}
 	if (reboot) {
-		// Disable stock recovery reflashing
+	if (DataManager::GetIntValue(RW_CALL_DEACTIVATION) != 0) {
+		 TWFunc::Deactivation_Process();
+		 DataManager::SetValue(RW_CALL_DEACTIVATION, 0);
+		 }
+ 		//Disable stock recovery reflashing
 		TWFunc::Disable_Stock_Recovery_Replace();
-		usleep(2000000); // Sleep for 2 seconds before rebooting
+ 		usleep(2000000); // Sleep for 2 seconds before rebooting
 		TWFunc::tw_reboot(rb_system);
 		usleep(5000000); // Sleep for 5 seconds to allow reboot to occur
-	} else {
+     } else {
 		DataManager::SetValue("tw_page_done", 1);
 	}
 	return op_status;

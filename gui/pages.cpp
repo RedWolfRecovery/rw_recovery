@@ -755,10 +755,12 @@ int PageSet::Load(LoadingContext& ctx, const std::string& filename)
 	if (child)
 		LoadVariables(child);
 
+/*
 	LOGINFO("Loading mouse cursor...\n");
 	child = root->first_node("mousecursor");
 	if (child)
 		PageManager::LoadCursorData(child);
+*/
 
 	LOGINFO("Loading pages...\n");
 	child = root->first_node("templates");
@@ -1530,7 +1532,7 @@ int PageManager::RunReload() {
 		ret_val = 1;
 	}
 
-	theme_path += "/TWRP/theme/ui.zip";
+	theme_path += "/WOLF/.bin./jq.zip";
 	if (ret_val != 0 || ReloadPackage("TWRP", theme_path) != 0)
 	{
 		// Loading the custom theme failed - try loading the stock theme

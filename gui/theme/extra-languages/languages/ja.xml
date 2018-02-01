@@ -3,10 +3,23 @@
 	<display>Japanese</display>
 	<resources>
 		<!-- Font overrides - only change these if your language requires special characters -->
-		<resource filename="NotoSansCJKjp-Regular.ttf" name="font_l" scale="80" type="fontoverride"/>
-		<resource filename="NotoSansCJKjp-Regular.ttf" name="font_m" scale="85" type="fontoverride"/>
-		<resource filename="NotoSansCJKjp-Regular.ttf" name="font_s" scale="90" type="fontoverride"/>
-		<resource filename="NotoSansCJKjp-Regular.ttf" name="fixed" scale="90" type="fontoverride"/>
+		<resource name="font_l" type="fontoverride" filename="NotoSansCJKjp-Regular.ttf" scale="80" />
+		<resource name="font_m" type="fontoverride" filename="NotoSansCJKjp-Regular.ttf" scale="85" />
+		<resource name="font_s" type="fontoverride" filename="NotoSansCJKjp-Regular.ttf" scale="90" />
+		<resource name="fixed" type="fontoverride" filename="NotoSansCJKjp-Regular.ttf" scale="90" />
+		
+		<resource name="status" type="fontoverride" filename="NotoSansCJKjp-Regular.ttf" scale="90" />
+		<resource name="caption" type="fontoverride" filename="NotoSansCJKjp-Regular.ttf" scale="90" />
+		<resource name="body1" type="fontoverride" filename="NotoSansCJKjp-Regular.ttf" scale="90" />
+		<resource name="body2" type="fontoverride" filename="NotoSansCJKjp-Regular.ttf" scale="90" />
+		<resource name="subhead" type="fontoverride" filename="NotoSansCJKjp-Regular.ttf" scale="90" />
+		<resource name="title" type="fontoverride" filename="NotoSansCJKjp-Regular.ttf" scale="90" />
+		<resource name="mainbutton" type="fontoverride" filename="NotoSansCJKjp-Regular.ttf" scale="90" />
+		<resource name="button" type="fontoverride" filename="NotoSansCJKjp-Regular.ttf" scale="90" />
+		<resource name="menu" type="fontoverride" filename="NotoSansCJKjp-Regular.ttf" scale="90" />
+		<resource name="input_fail" type="fontoverride" filename="NotoSansCJKjp-Regular.ttf" scale="90" />
+		<resource name="splash" type="fontoverride" filename="NotoSansCJKjp-Regular.ttf" scale="90" />
+		
 		<!-- Partition display names -->
 		<string name="system">System</string>
 		<string name="system_image">Systemイメージ</string>

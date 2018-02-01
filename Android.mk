@@ -41,9 +41,15 @@ TWHTCD_PATH := $(TWRES_PATH)htcd/
 TARGET_RECOVERY_GUI := true
 
 ifneq ($(TW_DEVICE_VERSION),)
-    LOCAL_CFLAGS += -DTW_DEVICE_VERSION='"-$(TW_DEVICE_VERSION)"'
+    LOCAL_CFLAGS += -DTW_DEVICE_VERSION='"$(TW_DEVICE_VERSION)"'
 else
-    LOCAL_CFLAGS += -DTW_DEVICE_VERSION='"-0"'
+    LOCAL_CFLAGS += -DTW_DEVICE_VERSION='"-Unofficial"'
+endif
+
+DEVICE := $(subst omni_,,$(TARGET_PRODUCT))
+
+ifeq ($(RW_DEVICE_MODEL),)
+    LOCAL_CFLAGS += -DRW_DEVICE_MODEL='"$(DEVICE)"'
 endif
 
 LOCAL_SRC_FILES := \
@@ -378,6 +384,7 @@ LOCAL_ADDITIONAL_DEPENDENCIES += \
     twrp \
     fsck.fat \
     fatlabel \
+    magiskboot \
     mkfs.fat \
     permissive.sh \
     simg2img_twrp \
