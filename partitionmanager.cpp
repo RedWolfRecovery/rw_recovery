@@ -3224,8 +3224,10 @@ int TWPartitionManager::Run_OTA_Survival_Backup(bool adbbackup) {
 	DataManager::GetValue(RW_SURVIVAL_BACKUP_NAME, Backup_Name);
 	
 	part_settings.Backup_Folder = part_settings.Backup_Folder + "/" + Backup_Name;
-	
-	if (DataManager::GetIntValue(RW_DO_SYSTEM_ON_OTA) != 0)
+	TWPartition* sys_image = PartitionManager.Find_Partition_By_Path("/system_image");
+	if (DataManager::GetIntValue(RW_DO_SYSTEM_ON_OTA) != 0 && sys_image != NULL)
+   Backup_List += "/system_image;/boot;";
+   else if (DataManager::GetIntValue(RW_DO_SYSTEM_ON_OTA) != 0)
    Backup_List += "/system;/boot;";
    else 
    Backup_List += "/boot;";
@@ -3470,11 +3472,7 @@ int TWPartitionManager::Run_OTA_Survival_Restore(const string& Restore_Name) {
     else
     DataManager::SetValue("tw_storage_path", "/");
     
-    std::string redwolf_sys_path = part_settings.Backup_Folder + "/system.ext4.win";
-	if (TWFunc::Path_Exists(redwolf_sys_path))
-	Restore_List += "/system;/boot;";
-	else
-	Restore_List += "/boot;";
+    DataManager::GetValue("tw_restore_list", Restore_List);
 	
 	if (!Mount_Current_Storage(true))
 		return false;
