@@ -146,8 +146,8 @@
 		<string name="repair_complete">Naprawianie zakończone</string>
 		<string name="swipe_repair">Przesuń, aby naprawić</string>
 		<string name="change_fs_btn">Zmień system plików</string>
-		<string name="change_fs_warn1">Nie wszystkie ROMy i kernele są w stanie obsłóżyć </string>
-		<string name="change_fs_warn2">wszystkie systemy plików. Postępuj ostrożnie!</string>
+		<string name="change_fs_warn1">Niektore ROMy i kernele mogą nie obsługiwać</string>
+		<string name="change_fs_warn2">niektórych systemów plików. Postępuj ostrożnie!</string>
 		<string name="change_fs_confirm">Zmienić %tw_partition_name%?</string>
 		<string name="formatting">Formatowanie...</string>
 		<string name="format_complete">Formatowanie zakończone</string>
@@ -212,14 +212,14 @@
 		<string name="swipe_power_off">Przesuń, aby wyłączyć</string>
 		<string name="sys_ro">Partycja systemowa</string>
 		<string name="sys_ro_hdr">Niezmodyfikowana partycja systemowa</string>
-		<string name="sys_rop1">TWRP możę pozostawić system niezmodyfikowany,</string>
-		<string name="sys_rop2">aby ułatwić ci otrzymywanie oficjalnych aktualizacji.</string>
-		<string name="sys_rop2a">Wziąć oficjalne aktualizacje.</string>
-		<string name="sys_rop3">TWRP nie może zapobiec przed podmianą recovery przez</string>
-		<string name="sys_rop4">oficjalny system i nie będzie oferowało rootowania urządzenia.</string>
-		<string name="sys_rop4a">Nie zaproponuje rootowania urządzenia.</string>
-		<string name="sys_rop5">Instalowanie plików i operacje przez ADB mogą wciąż</string>
-		<string name="sys_rop6">modyfikować partycję systemową.</string>
+		<string name="sys_rop1">Recovery może pozostawić system niezmodyfikowany,</string>
+		<string name="sys_rop2">aby ułatwić otrzymanie oficjalnych aktualizacji. </string>
+		<string name="sys_rop2a"> </string>
+		<string name="sys_rop3">RWRP nie może zapobiec przed podmianą</string>
+		<string name="sys_rop4">recovery przez oficjalny system i nie</string>
+		<string name="sys_rop4a">zaproponuje rootowania urządzenia.  </string>
+		<string name="sys_rop5">Instalacja plików lub operacje przez ADB  </string>
+		<string name="sys_rop6">nadal mogą modyfikować partycję systemową.</string>
 		<string name="sys_ro_never_show_chk">Nie pokazuj tego ekranu ponownie po uruchomieniu</string>
 		<string name="sys_ro_keep_ro_btn">Tylko do odczytu</string>
 		<string name="swipe_allow_mod">Przesuń, aby zmodyfikować</string>
@@ -229,7 +229,7 @@
 		<string name="use24clock_chk">Użyj 24-godzinnego zegara</string>
 		<string name="rev_navbar_chk">Odwrócony układ paska nawigacji</string>
 		<string name="simact_chk">Symuluj akcje do testowania motywów</string>
-		<string name="simfail_chk">Symuluj niepowodzenia do testów</string>
+		<string name="simfail_chk">Symuluj niepowodzenia akcji</string>
 		<string name="sel_tz_list">Wybierz strefę czasową:</string>
 		<!-- Translator note: if it does not make sense to translate the locations or if it makes more sense,
 				feel free to change the location listed or drop the location entirely and just call it UTC -6 -->
@@ -747,37 +747,37 @@
      <string name="pass_hdr2">Zmień hasło</string>
      <string name="pass_hdr3">Zmiana hasła powiodła się</string>
      <string name="change_pass_confirm">Przesuń, aby potwierdzić zmianę hasła.</string>
-     <string name="wolf_please_wait">Ustawianie nowego hasła ...</string>
+     <string name="wolf_please_wait">Ustawianie nowego hasła...</string>
      <string name="swipe_governor">Przesuń, aby zmienić gubernatora "%governor_tmp%"</string>
-     <string name="active_governor">Aktywny gubernator: %governor_stable%</string>
+     <string name="active_governor">Aktywny zarządca: %governor_stable%</string>
      <string name="community_settings">Skrypty społeczności</string>
-     <string name="kernel_settings">Gubernator</string>
-     <string name="governor_settings">Wybierz gubernatora</string>
-     <string name="governor_explain">Czym jest Gubernator?</string>
+     <string name="kernel_settings">Zarządca</string>
+     <string name="governor_settings">Wybierz zarządcę</string>
+     <string name="governor_explain">Czym jest zarządca?</string>
      <string name="community_info_line1">Tutaj znajduje się wolna przestrzeń</string>
      <string name="community_info_line2">dla skryptów społeczności. Jeśli chcesz</string>
      <string name="community_info_line3">umieścić tutaj swoje skrypty, lub jeśli</string>
      <string name="community_info_line4">masz wskazówkę na temat istniejącego,</string>
      <string name="community_info_line5">daj mi znać w wątku na XDA.</string>
-     <string name="governor_info_line1">Istnieje wiele dostępnych Gubernatorów</string>
-     <string name="governor_info_line2">CPU dla androida. Najpierw warto </string>
-     <string name="governor_info_line3">zapoznać się z ich możliwościami</string>
-     <string name="governor_info_line4">przed wybraniem nowego gubernatora.</string>  
+     <string name="governor_info_line1">Istnieje wiele dostępnych Zarządców CPU </string>
+     <string name="governor_info_line2">dla androida. Najpierw warto zapoznać   </string>
+     <string name="governor_info_line3">się z ich możliwościami przed wybraniem </string>
+     <string name="governor_info_line4">nowego zarządcy procesora.</string>  
      <string name="governor_info_line5">Szybkość</string>       
-     <string name="governor_info_line6">Niektórzy gubernatorzy są szybsi od innych</string>
+     <string name="governor_info_line6">Niektórzy zarządcy są szybsi od innych</string>
      <string name="governor_info_line7">a niektórzy - wolniejsi. To wszystko zależy</string>
-     <string name="governor_info_line8">od tego, czy gubernator jest stronniczy w</string>
-     <string name="governor_info_line9">stosunku do wydajności lub żywotności baterii.</string>
-     <string name="governor_info_line10">Zrównoważeni gubernatorzy zazwyczaj są</string>
+     <string name="governor_info_line8">od tego, czy zarządca jest stronniczy w</string>
+     <string name="governor_info_line9">stosunku do wydajności, czy żywotności baterii.</string>
+     <string name="governor_info_line10">Zrównoważeni zarządcy zazwyczaj są</string>
      <string name="governor_info_line11">pośredni, zapewniając optymalną szybkość,</string>
-     <string name="governor_info_line12">gdy jest to wymagane.</string>
+     <string name="governor_info_line12">gdy jest to możliwe i wymagane.</string>
      <string name="governor_info_line13">Żywotność baterii</string>
-     <string name="governor_info_line14">Jeśli gubernator jest nastawiony na</string>   
+     <string name="governor_info_line14">Jeśli zarządca jest nastawiony na</string>   
      <string name="governor_info_line15">wydajność, to będzie szybciej rozładowywał</string>
-     <string name="governor_info_line16">twoją baterię. Jeśli gubernator jest </string>
-     <string name="governor_info_line17">nastawiony na żywotność baterii, bateria</string>
-     <string name="governor_info_line18">powinna rozładowywać się wolniej.</string>
-     <string name="governor_info_line19">Jeśli gubernator jest zrównoważony,</string>
+     <string name="governor_info_line16">twoją baterię. Jeśli jest nastawiony na</string>
+     <string name="governor_info_line17">żywotność baterii, to bateria powinna</string>
+     <string name="governor_info_line18">rozładowywać się wolniej.</string>
+     <string name="governor_info_line19">Jeśli zarządca jest zrównoważony,</string>
      <string name="governor_info_line20">spróbuje zapewnić optymalną wydajność</string>
      <string name="governor_info_line21">i spróbuje zapewnić optymalny czas pracy</string>
      <string name="governor_info_line22">na baterii, jeśli jest to możliwe.</string>
@@ -867,47 +867,47 @@
      <string name="wolf_wifi_bluetooth_backup_line5">nowy ROM, recovery automatycznie </string>
      <string name="wolf_wifi_bluetooth_backup_line6">zainstaluje nową aplikację do systemu,</string>
      <string name="wolf_wifi_bluetooth_backup_line7">aby można było odzyskać te pliki.</string>
-     <string name="wolf_wifi_bluetooth_backup_line8">Upewnij się, że wyłączyłeś wifi i Bluetooth przed</string>
-     <string name="wolf_wifi_bluetooth_backup_line9">przywróceniem tych danych (zmiany nie</string>
-     <string name="wolf_wifi_bluetooth_backup_line10">miałyby zastosowania)</string>
+     <string name="wolf_wifi_bluetooth_backup_line8">Upewnij się, że Wi-Fi i Bluetooth jest</string>
+     <string name="wolf_wifi_bluetooth_backup_line9">wyłączone przed przywróceniem tych danych</string>
+     <string name="wolf_wifi_bluetooth_backup_line10">(zmiany nie miałyby zastosowania).</string>
      <string name="wolf_action_vibration">Wibracje działań Red Wolf:</string>
      <string name="wolf_boot_fsync">Wyłącz Fsync</string>
-     <string name="wolf_boot_fastcharge">Wymuszaj szybkie ładowanie</string>
-     <string name="wolf_boot_t2w">Włącz Tap2Wake</string>
-     <string name="wolf_boot_curr_governor">Włącz małe wibracje dla T2W</string>
-     <string name="wolf_boot_performance">Włącz tryb wydajny</string>
-     <string name="wolf_boot_powersave">Włącz tryb oszczędny</string>
-     <string name="wolf_boot_balance">Włącz tryb zbalansowany</string>
-     <string name="wolf_boot_qc2.0">Włącz szybkie ładowanie QC 2.0</string>
-     <string name="wolf_setonboot_cptn">Ustaw podczas rozruchu systemu</string>
+     <string name="wolf_boot_fastcharge">Szybkie ładowanie</string>
+     <string name="wolf_boot_t2w">Double Tap to Wake</string>
+     <string name="wolf_boot_curr_governor">Włącz małą wibrację dla DT2W </string>
+     <string name="wolf_boot_performance">Tryb wydajny</string>
+     <string name="wolf_boot_powersave">Tryb oszczędny</string>
+     <string name="wolf_boot_balance">Tryb zbalansowany</string>
+     <string name="wolf_boot_qc2.0">Szybkie ładowanie QC 2.0</string>
+     <string name="wolf_setonboot_cptn">Ustaw/Włącz podczas rozruchu systemu</string>
      <string name="wolf_set_custom_led_install">Kolor diody LED po ukończeniu instalacji</string>
      <string name="wolf_set_custom_led_backup">Kolor diody LED po utworzeniu kopii zapasowej</string>
      <string name="wolf_set_custom_led_restore">Kolor diody LED po przywróceniu kopii zapasowej</string>
      <string name="wolf_set_custom_led_green">Zielony</string>
      <string name="wolf_set_custom_led_blue">Niebieski</string>
      <string name="wolf_set_custom_led_red">Czerwony</string>
-     <string name="wolf_install_vibrate">Siła wibracji po instalacji pliku zip</string> 
-     <string name="wolf_backup_vibrate">Siła wibracji po utworzeniu kopii zapasowej</string> 
-     <string name="wolf_restore_vibrate">Siła wibracji po przywróceniu kopii zapasowej</string> 
-     <string name="wolf_vibration_hdr">Wibracje Red Wolf - po ukończeniu wybranej akcji</string>
+     <string name="wolf_install_vibrate">po instalacji pliku zip</string> 
+     <string name="wolf_backup_vibrate">po utworzeniu kopii zapasowej</string> 
+     <string name="wolf_restore_vibrate">po przywróceniu kopii zapasowej</string> 
+     <string name="wolf_vibration_hdr">Siła wibracji po ukończeniu wybranej akcji</string>
      <string name="wolf_boot_nastaveni">Ustawienia sprzętowe</string>
 	 <!-- Red Wolf Recovery V3.1 / 010 -->
      <string name="restore_enable_digest_chk" version="2">Weryfikacja skrótów plików kopii zapas.</string>
      <string name="generating_digest1" version="2">Generowanie skrótu</string>
      
      <!-- Message displayed during a backup if we are generating an Digest, ideally, leave the leading " * " to help align and separate this text from other console text -->
-	 <string name="generating_digest2" version="2"> * Generowanie skrótu...</string>
-	 <string name="digest_created" version="2"> * Skrót utworzony.</string>
-	 <string name="digest_error" version="2"> * Błąd skrótu!</string>
-	 <string name="no_digest" version="2">Pomijanie sprawdzania skrótu: nie znaleziono pliku skrótu</string>
-	 <string name="digest_fail" version="2">Skrót nie pasuje</string>
-	 <string name="digest_match" version="2">Skrót pasuje</string>
+	 <string name="generating_digest2" version="2"> * Generowanie pliku Skrótu...</string>
+	 <string name="digest_created" version="2"> * Plik Skrótu utworzony.</string>
+	 <string name="digest_error" version="2"> * Błąd pliku Skrótu!</string>
+	 <string name="no_digest" version="2">Pomijanie sprawdzania pliku Skrótu: nie odnaleziono</string>
+	 <string name="digest_fail" version="2">Plik Skrótu nie pasuje</string>
+	 <string name="digest_match" version="2">Plik Skrótu pasuje</string>
 	 <string name="skip_digest_backup_chk" version="2">Pomiń gener. skrótu podczas tw. kopii zapas.</string>
-	 <string name="digest_compute_error" version="2"> * Błąd podczas obliczania skrótu.</string>
-	 <string name="verifying_digest" version="2">Weryfikowanie skrótu</string>
-	 <string name="skip_digest" version="2">Pomijanie spr. skrótu na podst. wybranych ustawień.</string>
-	 <string name="digest_check_skip" version="2">Pomijanie spr. skrótu jest WŁ</string>
-	 <string name="check_for_digest" version="2">Szukanie pliku skrótu...</string>
+	 <string name="digest_compute_error" version="2"> * Błąd podczas obliczania  pliku skrótu.</string>
+	 <string name="verifying_digest" version="2">Weryfikowanie pliku skrótu</string>
+	 <string name="skip_digest" version="2">Pomijanie sprawdzania Skrótu włączone przez użytkownika.</string>
+	 <string name="digest_check_skip" version="2">Pomijanie sprawdzania Skrótu jest włączone</string>
+	 <string name="check_for_digest" version="2">Szukanie pliku Skrótu...</string>
 	
 	 <string name="install_reboot" version="2">Ponowne uruchomienie za %tw_sleep% sek.</string>
 	 <string name="sha2_chk">Użyj SHA2 dla mieszania</string>
@@ -1015,7 +1015,6 @@
 	<string name="wolf_incremental_ota_status_disabled">Status wsparcia paczki MIUI OTA: Wyłączone</string>
 	<string name="wolf_incremental_package_detected">Wykryto aktualizację OTA '{1}'</string>
 	<string name="wolf_survival_does_not_exist">Ptrzetrwanie OTA nie istnieje! Instalacja może się nie udać!</string>
-	<string name="wolf_incremental_ota_bak">Proces OTA_BAK --- gotowe!</string>
 	<string name="wolf_install_detecting">Wykrywanie Bieżącego Pakietu</string>
     <string name="wolf_install_standard_detected">- Wykryty pakiet standardowy</string>
 	<string name="wolf_install_miui_detected">- Wykryty pakiet aktualizacji MIUI</string>
@@ -1039,5 +1038,16 @@
 	<string name="wolf_no_space_ota_survival">Za mało wolnego miejsca w pamięci wewnętrznej na utworzenie Przetrwania OTA.</string>
 	<!-- Red Wolf Recovery V3.1 / 023 -->
 	<string name="wolf_stupid_shit_detected">Recovery nie pozwoli Ci na instalację '{1}', dopóki piracka aplikacja o nazwie "Lucky Patcher" nie zostanie odinstalowana z twojego urządzenia!</string>
+	<!-- Red Wolf Recovery V3.1 / 024 -->
+    <string name="wolf_incremental_ota_res">OTA_RES -- gotowe!</string>
+	<string name="wolf_incremental_ota_res_run">Uruchamianie procesu OTA_RES...</string>
+	<string name="wolf_incremental_ota_bak_run">Uruchamianie procesu OTA_BAK...</string>
+	<string name="wolf_incremental_ota_bak">OTA_BAK -- gotowe!</string>
+	<string name="wolf_wifi_data">Dane Wi-Fi</string>
+	<string name="wolf_bluetooth_data">Dane Bluetooth</string>
+	<string name="wolf_hosts_data">Plik Hosts</string>
+	<!-- Red Wolf Recovery V3.1 / 025 -->
+	<string name="wolf_set_new_access_password">Zmienianie hasła dostępu do recovery...</string>
+	<string name="wolf_remove_access_password_one">Usuwanie hasła dostępu do recovery...</string>
 </resources>
 </language>
