@@ -2162,10 +2162,14 @@ int GUIAction::flashlight(std::string arg __unused)
 	string flashdisable = "0";
     string flashvalue = flashone + flashdisable + flashdisable;
     string flashpathvalue_one = "/sys/class/leds/led:torch_";
+    string flashpathvalue_one1 = "/sys/class/leds/torch-light";
     string flashpathvalue_two = "/brightness";
     string flashpathone = flashpathvalue_one + flashdisable + flashpathvalue_two;
     string flashpathtwo = flashpathvalue_one + flashone + flashpathvalue_two;
           if (!TWFunc::Path_Exists(flashpathone)) {
+		  flashpathone = flashpathvalue_one1 + flashdisable + flashpathvalue_two;
+		  flashpathtwo = flashpathvalue_one1 + flashone + flashpathvalue_two;
+		  if (!TWFunc::Path_Exists(flashpathone)) {
       gui_err("redwolf_flash_not_supported=Red Wolf: Recovery flashlight isn't supported on this device!");
 	   } else {
 		DataManager::GetValue("flashlight", flash);
@@ -2178,6 +2182,7 @@ int GUIAction::flashlight(std::string arg __unused)
 	TWFunc::write_to_file(flashpathtwo, flashdisable);
      DataManager::SetValue("flashlight", 0);
 	}
+     }
   }
 	operation_end(0);
      return 0;
