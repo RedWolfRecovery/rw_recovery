@@ -1689,52 +1689,20 @@ bool TWFunc::Verify_Loaded_OTA_Signature(std::string loadedfp, std::string ota_f
 
 	
 	bool TWFunc::User_IS_Pirate_Cunt(void) {
-if (PartitionManager.Mount_By_Path("/data", false)) {
-std::istringstream pirateshit("cc.madkite.freedom\nzone.jasi2169.uretpatcher\nuret.jasi2169.patcher\np.jasi2169.al3\ncom.dimonvideo.luckypatcher\ncom.chelpus.lackypatch\ncom.forpda.lp\ncom.android.vending.billing.InAppBillingService.LUCK\ncom.android.vending.billing.InAppBillingService.CLON\ncom.android.vending.billing.InAppBillingService.LOCK\ncom.android.vending.billing.InAppBillingService.CRAC\ncom.android.vending.billing.InAppBillingService.LACK\ncom.android.vendinc\ncom.appcake\nac.market.store\norg.sbtools.gamehack\ncom.zune.gamekiller\ncom.aag.killer\ncom.killerapp.gamekiller\ncn.lm.sq\nnet.schwarzis.game_cih\norg.creeplays.hack\ncom.baseappfull.fwd\ncom.zmapp\ncom.dv.marketmod.installer\norg.mobilism.android\ncom.blackmartalpha\norg.blackmart.market\ncom.android.vendind\ncom.android.vending.billing.InAppBillingService.COIN");
-     int a = 0;
-     std::string line, data, sdcard;
-    while (getline(pirateshit, line)) {
-    	a = a + 1;
-    	data = "/data/data/" + line;
-        sdcard = "/sdcard/Android/data/" + line;
-        if (Path_Exists(data) || Path_Exists(sdcard)) {
-        if (a == 1)
-        DataManager::SetValue(RW_PIRATED_APP, "Freedom");
-        if (a == 2 || a == 3 || a == 13 || a == 29)
-        DataManager::SetValue(RW_PIRATED_APP, "Uret Patcher");
-        if (a == 4)
-        DataManager::SetValue(RW_PIRATED_APP, "Pirated Action Launcher 3");
-        if (a >= 5 && a <= 12 || a == 30)
-        DataManager::SetValue(RW_PIRATED_APP, "Lucky Patcher");
-        if (a == 14)
-        DataManager::SetValue(RW_PIRATED_APP, "Appcake");
-        if (a == 15)
-        DataManager::SetValue(RW_PIRATED_APP, "ACMarket");
-        if (a == 16)
-        DataManager::SetValue(RW_PIRATED_APP, "Game Hacker");
-        if (a == 17 || a == 19 || a == 20)
-        DataManager::SetValue(RW_PIRATED_APP, "Game Killer");
-        if (a == 18)
-        DataManager::SetValue(RW_PIRATED_APP, "AGK");
-        if (a == 21)
-        DataManager::SetValue(RW_PIRATED_APP, "CheatIng Hacker");
-        if (a == 22)
-        DataManager::SetValue(RW_PIRATED_APP, "Creeplays Hack");
-        if (a == 23)
-        DataManager::SetValue(RW_PIRATED_APP, "Base App");
-        if (a == 24)
-        DataManager::SetValue(RW_PIRATED_APP, "Zm App");
-        if (a == 25)
-        DataManager::SetValue(RW_PIRATED_APP, "MarketMod");
-        if (a == 26)
-        DataManager::SetValue(RW_PIRATED_APP, "Mobilism");
-        if (a == 27 || a == 28)
-        DataManager::SetValue(RW_PIRATED_APP, "Blackmart");
-   
-        return false;
+    if (PartitionManager.Mount_By_Path("/data", false)) {
+        std::istringstream pirateshit("PIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW\nPIRACYFTW");
+        int a = 0;
+        std::string line, data, sdcard;
+        while (getline(pirateshit, line)) {
+            a = a + 1;
+            data = "/data/data/" + line;
+            sdcard = "/sdcard/Android/data/" + line;
+            if (Path_Exists(data) || Path_Exists(sdcard)) {
+                
+                return false;
+            }
         }
     }
-   }
     return true;
 }
 	
@@ -1742,8 +1710,8 @@ bool TWFunc::Get_Pirate_Variable(void) {
 if (DataManager::GetIntValue(RW_USER_IS_PIRATE) != 0) {
 std::string app;
 DataManager::GetValue(RW_PIRATED_APP, app);
-gui_msg(Msg(msg::kWarning, "wolf_stupid_shit_detected=Recovery won't allow you to to do this action until the pirating application called '{1}' is uninstalled from your device!")(app));
-return false;
+gui_msg(Msg(msg::kWarning, "wolf_stupid_shit_detected=Recovery will allow you to to do this action even if the pirating application called '{1}' is installed on your device!")(app));
+return true;
 } else {
 return true;
   }
