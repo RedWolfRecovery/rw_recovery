@@ -120,6 +120,7 @@ public:
 	bool Update_Size(bool Display_Error);                                     // Updates size information
 	void Recreate_Media_Folder();                                             // Recreates the /data/media folder
 
+    bool Read_Write_Specific_Partition(string path, string partition_name, bool backup);
 	bool Flash_Image(PartitionSettings *part_settings);                                        // Flashes an image to the partition
 	void Change_Mount_Read_Only(bool new_value);                              // Changes Mount_Read_Only to new_value
 	bool Is_Read_Only();                                                      // Check if system is read-only in TWRP
@@ -273,8 +274,6 @@ public:
 	int Write_Fstab();                                                        // Creates /etc/fstab file that's used by the command line for mount commands
 	void Output_Partition_Logging();                                          // Outputs partition information to the log
 	void Output_Partition(TWPartition* Part);                                 // Outputs partition details to the log
-	void Notify_On_Finished_Backup();                                         // Notify user that the backup is finished
-	void Notify_On_Finished_Restore();                                        // Notify user that the restore is finished
 	int Mount_By_Path(string Path, bool Display_Error);                       // Mounts partition based on path (e.g. /system)
 	int UnMount_By_Path(string Path, bool Display_Error);                     // Unmounts partition based on path
 	int Is_Mounted_By_Path(string Path);                                      // Checks if partition is mounted based on path
@@ -284,8 +283,8 @@ public:
 	TWPartition* Find_Partition_By_Block_Device(const string& Block_Device);  // Returns a pointer to a partition based on block device
 	int Check_Backup_Name(bool Display_Error);                                // Checks the current backup name to ensure that it is valid
 	int Run_Backup(bool adbbackup);                                           // Initiates a backup in the current storage
-	int Run_OTA_Survival_Backup(bool adbbackup);                              // Create backup for OTA survival in the internal storage
-    int Run_OTA_Survival_Restore(const string& Restore_Name);                 // Restore OTA survival
+	int Run_Custom_Backup(void);                              // Create backup for OTA survival in the internal storage
+    int Run_Custom_Restore(const string& Restore_Name);                 // Restore OTA survival
     
     
     int Run_Restore(const string& Restore_Name);                              // Restores a backup
@@ -297,13 +296,7 @@ public:
 	int Factory_Reset();                                                      // Performs a factory reset
 	int Wipe_Dalvik_Cache();                                                  // Wipes dalvik cache
 	int Wipe_Substratum_Overlays();                                    // Wipe substratum overlays
-	void Restore_Wifi_Files(PartitionSettings *part_settings);                                                  // Restore Backup
-	void Restore_Bluetooth_Files(PartitionSettings *part_settings);                                    // Restore Backup
-	void Restore_Hosts_Files(PartitionSettings *part_settings);                                                  // Restore Backup
-	void Backup_Wifi_Files(PartitionSettings *part_settings);                                    // Backup files
-	void Backup_Bluetooth_Files(PartitionSettings *part_settings);                                    // Backup files
-	void Backup_Hosts_Files(PartitionSettings *part_settings);                                    // Backup files
-	int Wipe_Rotate_Data();                                                   // Wipes rotation data --
+    int Wipe_Rotate_Data();                                                   // Wipes rotation data --
 	int Wipe_Battery_Stats();                                                 // Wipe battery stats -- /data/system/batterystats.bin
 	int Wipe_Android_Secure();                                                // Wipes android secure
 	int Format_Data();                                                        // Really formats data on /data/media devices -- also removes encryption
@@ -311,7 +304,6 @@ public:
 	int Repair_By_Path(string Path, bool Display_Error);                      // Repairs a partition based on path
 	int Resize_By_Path(string Path, bool Display_Error);                      // Resizes a partition based on path
 	void Update_System_Details();                                             // Updates fstab, file systems, sizes, etc.
-	void Update_System_Details_OTA_Survival();                                             // Updates fstab, file systems, sizes, etc.
 	int Decrypt_Device(string Password);                                      // Attempt to decrypt any encrypted partitions
 	int usb_storage_enable(void);                                             // Enable USB storage mode
 	int usb_storage_disable(void);                                            // Disable USB storage mode
@@ -341,8 +333,7 @@ public:
 	void Remove_Partition_By_Path(string Path);                               // Removes / erases a partition entry from the partition list
 
 	bool Flash_Image(string& path, string& filename);                         // Flashes an image to a selected partition from the partition list
-	bool Flash_Repacked_Image(string& path, string& filename, bool recovery); // Reflash repacked image...
-	
+	 
 	bool Restore_Partition(struct PartitionSettings *part_settings);          // Restore the partitions based on type
 	TWAtomicInt stop_backup;
 	void Set_Active_Slot(const string& Slot);                                 // Sets the active slot to A or B

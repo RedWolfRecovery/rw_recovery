@@ -369,17 +369,12 @@ protected:
 	int twcmd(std::string arg);
 	int setbootslot(std::string arg);
 	int installapp(std::string arg);
-       int flashlight(std::string arg);
-	int adb(std::string arg);
-	int disableinstallled(std::string arg);
-    int disablebackupled(std::string arg);
-	int disablerestoreled(std::string arg);
+    int flashlight(std::string arg);
+	int disableled(std::string arg);
 	int removepassword(std::string arg);
 	int setpassword(std::string arg);
-	int changesplash(std::string arg);
-	int wlfx(std::string arg);
-	int wlfw(std::string arg);
-
+    int verifypassword(std::string arg);
+	
 	int simulate;
 };
 

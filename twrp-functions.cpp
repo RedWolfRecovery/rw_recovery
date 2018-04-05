@@ -205,7 +205,8 @@ Archive_Type TWFunc::Get_File_Type(string fn) {
 	return UNCOMPRESSED; // default
 }
 
-int TWFunc::Try_Decrypting_File(string fn, string password) {
+
+int TWFunc::Try_Decrypting_File(string fn, string password, bool Display_Error) {
 #ifndef TW_EXCLUDE_ENCRYPTED_BACKUPS
 	OAES_CTX * ctx = NULL;
 	uint8_t _key_data[32] = "";
@@ -265,6 +266,7 @@ int TWFunc::Try_Decrypting_File(string fn, string password) {
 		return -1;
 	}
 	if (oaes_decrypt(ctx, buffer, read_len, buffer_out, &out_len) != OAES_RET_SUCCESS) {
+		if (Display_Error)
 		LOGERR("Failed to decrypt file '%s'\n", fn.c_str());
 		fclose(f);
 		free(buffer_out);
@@ -303,7 +305,7 @@ int TWFunc::Try_Decrypting_File(string fn, string password) {
 	LOGERR("Encrypted backup support not included.\n");
 	return -1;
 #endif
-}
+}		
 
 unsigned long TWFunc::Get_File_Size(const string& Path) {
 	struct stat st;
@@ -444,166 +446,8 @@ void TWFunc::install_htc_dumlock(void) {
 	gui_msg("done=Done.");
 }
 
-void TWFunc::Deactivation_Process(void) {
-std::string tmp = "/tmp/redwolf";
-std::string ramdisk = tmp + "/ramdisk";
-std::string fstab = ramdisk + "/fstab.qcom";
-std::string default_prop = ramdisk + "/default.prop";
-std::string dm_verity_prop = "ro.config.dmverity";
-std::string result;
-std::string verity_key = ramdisk + "/verity_key";
-std::string firmware_key = ramdisk + "/sbin/firmware_key.cer";
-std::string debug = "ro.debuggable";
-std::string adb_ro = "ro.adb.secure";
-std::string ro = "ro.secure";
-std::string mock = "ro.allow.mock.location";
-std::string miui_secure_boot = "ro.secureboot.devicelock";
-std::string dm_verity_prop_false = dm_verity_prop + "=false";
-std::string dm_verity_prop_true = dm_verity_prop + "=true";
 
-	
-    // Mount partitions
-	if (!PartitionManager.Mount_By_Path("/sdcard", false))
-		return;
 		
-		if (!PartitionManager.Mount_By_Path("/system", false))
-		return;
-    
-		// Check AromaFM Config
-	if (DataManager::GetIntValue(RW_SAVE_LOAD_AROMAFM) == 1) {
-		string aromafm_path = "/sdcard/WOLF.res";
-		string aromafm_file = aromafm_path + "/aromafm.cfg";
-		if (!Path_Exists(aromafm_path)) {
-					if (mkdir(aromafm_path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)) {
-						LOGERR("Error making %s directory: %s\n", aromafm_path.c_str(), strerror(errno));
-					}
-				}
-			  // Save AromaFM config
-	     if (copy_file("/WolfShit/AromaFM/AromaFM.cfg", aromafm_file, 0644)) {
-							LOGERR("Error copying AromaFM config\n");
-				}
-			}
-			
-			// Rename stock recovery back
-			if (DataManager::GetIntValue(RW_DONT_REPLACE_STOCK) == 1) {
-             if (Path_Exists("/system/wlfx0recovery-from-boot.bak0xwlf")) {
-				rename("/system/wlfx0recovery-from-boot.bak0xwlf", "/system/recovery-from-boot.p");
-				}
-			}
-			
-			// Unpack boot image
-	         TWFunc::Dumwolf(true, true);
-				
-			   if (DataManager::GetIntValue(RW_DISABLE_DM_VERITY) == 1) {
-            std::string verity = "verify";
-			std::string one_verity = "," + verity;
-			std::string two_verity = verity + ",";
-			std::string support_scfs = "support_scfs";
-			std::string one_support_scfs = "," + support_scfs;
-			std::string two_support_scfs = support_scfs + ",";
-			TWFunc::Replace_Word_In_File(fstab, one_verity, "");
-			TWFunc::Replace_Word_In_File(fstab, two_verity, "");
-			TWFunc::Replace_Word_In_File(fstab, verity, "");
-			TWFunc::Replace_Word_In_File(fstab, one_support_scfs, "");
-			TWFunc::Replace_Word_In_File(fstab, two_support_scfs, "");
-			TWFunc::Replace_Word_In_File(fstab, support_scfs, "");
-			if (TWFunc::CheckWord(default_prop, dm_verity_prop)) {
-            TWFunc::Replace_Word_In_File(default_prop, dm_verity_prop_true, dm_verity_prop_false);
-             } else {
-             ofstream File(default_prop.c_str(), std::ios::app);
-             if (File.is_open()) {
-             File << dm_verity_prop_false;
-             File.close();
-             }			
-			}
-			
-			if (Path_Exists(verity_key))
-			unlink(verity_key.c_str());
-			if (Path_Exists(firmware_key))
-			unlink(firmware_key.c_str());
-			}
-			
-			// Check Forced Encryption
-			if (DataManager::GetIntValue(RW_DISABLE_FORCED_ENCRYPTION) == 1) {
-			std::string encryptable = "encryptable=";
-			TWFunc::Replace_Word_In_File(fstab, "forceencrypt=", encryptable);
-			TWFunc::Replace_Word_In_File(fstab, "forcefdeorfbe=", encryptable);
-			}
-				
-				// Enable Debugging
-				if (DataManager::GetIntValue(RW_ENABLE_DEBUGGING) == 1) {
-				TWFunc::Set_New_Ramdisk_Property(default_prop, debug, true);
-	            }
-	
-	           // Disable Debugging
-				if (DataManager::GetIntValue(RW_DISABLE_DEBUGGING) == 1) {
-				TWFunc::Set_New_Ramdisk_Property(default_prop, debug, false);
-	            }
-	
-	          // Advanced stock recovery replace
-	            if (DataManager::GetIntValue(RW_DONT_REPLACE_STOCK) != 1) {
-				if (DataManager::GetIntValue(RW_ADVANCED_STOCK_REPLACE) == 1) {
-				  if (Path_Exists("/system/bin/install-recovery.sh")) {
-				     if (!Path_Exists("/system/bin/wlfx0install-recovery.bak0xwlf")) {
-				     rename("/system/bin/install-recovery.sh", "/system/bin/wlfx0install-recovery.bak0xwlf");
-				     }
-				  }
-				if (Path_Exists("/system/etc/install-recovery.sh")) {
-				     if (!Path_Exists("/system/etc/wlfx0install-recovery.bak0xwlf")) {
-				     rename("/system/etc/install-recovery.sh", "/system/etc/wlfx0install-recovery.bak0xwlf");
-				    }
-			     }
-			if (Path_Exists("/system/etc/recovery-resource.dat")) {
-				     if (!Path_Exists("/system/etc/wlfx0recovery-rerce0xwlf")) {
-				     rename("/system/etc/recovery-resource.dat", "/system/etc/wlfx0recovery-resource0xwlf");
-				    }
-			     }
-	       }
-	     }
-	     // Enable ADB read-only property in the default.prop
-	    if (DataManager::GetIntValue(RW_ENABLE_ADB_RO) == 1) {
-	     TWFunc::Set_New_Ramdisk_Property(default_prop, adb_ro, true);
-      }
-      
-      // Disable ADB read-only property in the default.prop
-	    if (DataManager::GetIntValue(RW_DISABLE_ADB_RO) == 1) {
-	     TWFunc::Set_New_Ramdisk_Property(default_prop, adb_ro, false);
-      }
-     
-      // Enable read-only property in the default.prop
-	    if (DataManager::GetIntValue(RW_ENABLE_SECURE_RO) == 1) {
-	     TWFunc::Set_New_Ramdisk_Property(default_prop, ro, true);
-      }
-      
-      // Disable read-only property in the default.prop
-	    if (DataManager::GetIntValue(RW_DISABLE_SECURE_RO) == 1) {
-	     TWFunc::Set_New_Ramdisk_Property(default_prop, ro, false);
-      }
-      
-      // Disable secure-boot
-      if (DataManager::GetIntValue(RW_DISABLE_SECURE_BOOT) == 1) {
-	     TWFunc::Set_New_Ramdisk_Property(default_prop, miui_secure_boot, false);
-      }
-      
-      
-      // Enable mock_location property
-      if (DataManager::GetIntValue(RW_ENABLE_MOCK_LOCATION) == 1) {
-	     TWFunc::Set_New_Ramdisk_Property(default_prop, mock, true);
-      }
-      
-      // Disable mock_location property
-      if (DataManager::GetIntValue(RW_DISABLE_MOCK_LOCATION) == 1) {
-	     TWFunc::Set_New_Ramdisk_Property(default_prop, mock, false);
-      }
-            if (Path_Exists(default_prop))
-             chmod(default_prop.c_str(), 0644);  
-             if (Path_Exists(fstab))
-                 chmod(fstab.c_str(), 0640);
-			 
-            // Make new boot image
-			TWFunc::Dumwolf(false, true);		
-}
-
 void TWFunc::htc_dumlock_restore_original_boot(void) {
 	if (!PartitionManager.Mount_By_Path("/sdcard", true))
 		return;
@@ -789,12 +633,14 @@ int TWFunc::tw_reboot(RebootCommand command)
 
 void TWFunc::check_and_run_script(const char* script_file, const char* display_name)
 {
+	#ifdef RW_ALLOW_HELPER_SCRIPTS
 	// Check for and run startup script if script exists
 	struct stat st;
 	if (stat(script_file, &st) == 0) {
 		chmod(script_file, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 		TWFunc::Exec_Cmd(script_file);
 	}
+	#endif
 }
 
 int TWFunc::removeDir(const string path, bool skipParent) {
@@ -952,7 +798,7 @@ bool TWFunc::Try_Decrypting_Backup(string Restore_Path, string Password) {
 		Filename = Restore_Path;
 		Filename += de->d_name;
 		if (TWFunc::Get_File_Type(Filename) == ENCRYPTED) {
-			if (TWFunc::Try_Decrypting_File(Filename, Password) < 2) {
+			if (TWFunc::Try_Decrypting_File(Filename, Password, true) < 2) {
 				DataManager::SetValue("tw_restore_password", ""); // Clear the bad password
 				DataManager::SetValue("tw_restore_display", "");  // Also clear the display mask
 				closedir(d);
@@ -1282,9 +1128,17 @@ std::string TWFunc::to_string(unsigned long value) {
 void TWFunc::Disable_Stock_Recovery_Replace(void) {
 	if (PartitionManager.Mount_By_Path("/system", false)) {
 		// Disable flashing of stock recovery
-		if (TWFunc::Path_Exists("/system/recovery-from-boot.p")) {
 		if (DataManager::GetIntValue(RW_DONT_REPLACE_STOCK) != 1) {
-				rename("/system/recovery-from-boot.p", "/system/wlfx0recovery-from-boot.bak0xwlf");
+				if (DataManager::GetIntValue(RW_ADVANCED_STOCK_REPLACE) == 1) {
+				  if (Path_Exists("/system/bin/install-recovery.sh")) 
+				     rename("/system/bin/install-recovery.sh", "/system/bin/wlfx0install-recoverybak0xwlf");    
+				if (Path_Exists("/system/etc/install-recovery.sh"))
+				  rename("/system/etc/install-recovery.sh", "/system/etc/wlfx0install-recoverybak0xwlf");
+			if (Path_Exists("/system/etc/recovery-resource.dat"))
+				    rename("/system/etc/recovery-resource.dat", "/system/etc/wlfx0recovery-resource0xwlf");
+	       }
+		if (TWFunc::Path_Exists("/system/recovery-from-boot.p")) {
+				rename("/system/recovery-from-boot.p", "/system/wlfx0recovery-from-bootbak0xwlf");
         sync();
 		      }
 	      }
@@ -1317,189 +1171,112 @@ bool TWFunc::CheckWord(std::string filename, std::string search) {
     File.open (filename);
     if(File.is_open()) {
         while(!File.eof()) {
-            getline(File,line);
-            if (line.find(search) != std::string::npos)
+            std::getline(File,line);
+            if (line.find(search) != string::npos) {
+            File.close();
              return true;
+             }
         }
         File.close();
     }
     return false;
 }
 
-
-
 void TWFunc::Replace_Word_In_File(string file_path, string search, string word) {
-  std::string renamed = file_path + ".wlfx";
-  std::string contents_of_file;
+  std::string contents_of_file, local, renamed = file_path + ".wlfx";
   if (TWFunc::Path_Exists(renamed))
   unlink(renamed.c_str());
   std::rename(file_path.c_str(), renamed.c_str());
   std::ifstream old_file(renamed.c_str());
   std::ofstream new_file(file_path.c_str());
-  while (std::getline(old_file, contents_of_file)) {
-   if (contents_of_file.find(search) != std::string::npos) {
-      size_t pos = 0;
-      while((pos = contents_of_file.find(search, pos)) != std::string::npos) {
-      contents_of_file.replace(pos, search.length(), word);
+  size_t start_pos, end_pos, pos;
+  while (std::getline(old_file, contents_of_file)) { 	
+  start_pos = 0; pos = 0;
+  end_pos = search.find(";", start_pos);
+  while (end_pos != string::npos && start_pos < search.size()) {
+   local = search.substr(start_pos, end_pos - start_pos);
+   if (contents_of_file.find(local) != string::npos) {
+      while((pos = contents_of_file.find(local, pos)) != string::npos) {
+      contents_of_file.replace(pos, local.length(), word);
       pos += word.length();
       }
      }
+     start_pos = end_pos + 1;
+     end_pos = search.find(";", start_pos);
+    }
       new_file << contents_of_file << '\n';
   }
   unlink(renamed.c_str());
+  chmod(file_path.c_str(), 0640);  
 }
 
-
-void TWFunc::Set_New_Ramdisk_Property(std::string file_path, std::string prop, bool enable) {
-if (TWFunc::CheckWord(file_path, prop)) {
-if (enable) {
-std::string expected_value = prop + "=0";
-prop += "=1";
-TWFunc::Replace_Word_In_File(file_path, expected_value, prop);
-} else {
-std::string expected_value = prop + "=1";
-prop += "=0";
-TWFunc::Replace_Word_In_File(file_path, expected_value, prop);
-}
-} else {
-ofstream File(file_path.c_str(), std::ios::app);
-if (File.is_open()) {
-if (enable)
-prop += "=1";
-else
-prop += "=0";
-File << prop;
-File.close();
-}
-}
-}
-
-	
-  
-
-void TWFunc::Write_MIUI_Install_Status(std::string install_status, bool verify) {
-std::string last_status = "/cache/recovery/last_status";
-if (!verify) {
-if (DataManager::GetIntValue(RW_MIUI_ZIP_TMP) != 0 || DataManager::GetIntValue(RW_METADATA_PRE_BUILD) != 0) {
-    if (PartitionManager.Mount_By_Path("/cache", true)) {
-    if (Path_Exists(last_status)) 
-    unlink(last_status.c_str());
-    
-     ofstream status;
-     status.open (last_status.c_str());
-     status << install_status;
-     status.close();
+void TWFunc::Replace_Word_In_File(std::string file_path, std::string search) {
+  std::string contents_of_file, local, renamed = file_path + ".wlfx";
+  if (TWFunc::Path_Exists(renamed))
+  unlink(renamed.c_str());
+  std::rename(file_path.c_str(), renamed.c_str());
+  std::ifstream old_file(renamed.c_str());
+  std::ofstream new_file(file_path.c_str());
+  size_t start_pos, end_pos, pos;
+  while (std::getline(old_file, contents_of_file)) {
+  start_pos = 0; pos = 0;
+  end_pos = search.find(";", start_pos);
+  while (end_pos != string::npos && start_pos < search.size()) {
+   local = search.substr(start_pos, end_pos - start_pos);
+   if (contents_of_file.find(local) != string::npos) {
+      while((pos = contents_of_file.find(local, pos)) != string::npos)
+      contents_of_file.replace(pos, local.length(), "");
      }
+     start_pos = end_pos + 1;
+     end_pos = search.find(";", start_pos);
     }
-   } else if (PartitionManager.Mount_By_Path("/cache", true) && DataManager::GetIntValue(RW_INCREMENTAL_PACKAGE) != 0) {
-    if (Path_Exists(last_status)) 
-    unlink(last_status.c_str());
-    
-     ofstream status;
-     status.open (last_status.c_str());
-     status << install_status;
-     status.close();
-     }
+      new_file << contents_of_file << '\n';
+  }
+  unlink(renamed.c_str());
+  chmod(file_path.c_str(), 0640);  
 }
+
+
+
 
 void TWFunc::Start_redwolf(void) {
-int i;
-std::string cpu_one, cpu_two, a, loaded_password;
-cpu_one = "/sys/devices/system/cpu/cpu";
-cpu_two = "/cpufreq/scaling_governor";
-std::string enable = "1";
-std::string disable = "0";
-std::string sys_path = "/sys/";
-std::string t2w = sys_path + "android_touch/doubletap2wake";
-std::string fsync = sys_path + "module/sync/parameters/fsync_enabled";
-std::string fast_charge = sys_path + "kernel/fast_charge/force_fast_charge";
-std::string performance = "performance";
-std::string powersave = "powersave";
-std::string interactive = "interactive";
-std::string kernel_proc_check = "/proc/touchpanel/capacitive_keys_";
-std::string device_one = kernel_proc_check + "enable";
-std::string device_two = kernel_proc_check + "disable";
-std::string password_file = "/sbin/wlfx";
-    
-	if (TWFunc::Path_Exists(device_one))
-	TWFunc::write_to_file(device_one, disable);
-	if (TWFunc::Path_Exists(device_two))
-	TWFunc::write_to_file(device_two, enable);
+size_t i;
+std::string info = "/sbin/wlfs";
+
+     if (TWFunc::Path_Exists("/proc/touchpanel/capacitive_keys_enable"))
+	TWFunc::write_to_file("/proc/touchpanel/capacitive_keys_enable", "0");
+	else if (TWFunc::Path_Exists("/proc/touchpanel/capacitive_keys_disable"))
+	TWFunc::write_to_file("/proc/touchpanel/capacitive_keys_disable", "1");
 	
-if (TWFunc::Path_Exists(password_file)) {
-if (TWFunc::read_file(password_file, loaded_password) == 0) {
-if (!loaded_password.empty())
-DataManager::SetValue(RW_PASSWORD_VARIABLE, loaded_password);
+if (TWFunc::Path_Exists(info)) {
+#ifndef TW_EXCLUDE_ENCRYPTED_BACKUPS
+if (TWFunc::Get_File_Type(info) == 2) {
+if (gui_startPage("lockpass", 1, 1) != 0) {
+LOGERR("Failed to start lockpass GUI page.\n");
 }
+}
+#else
+if (gui_startPage("lockpass", 1, 1) != 0) {
+LOGERR("Failed to start lockpass GUI page.\n");
+}
+#endif
 }
 
  if (DataManager::GetIntValue(RW_T2W_CHECK) == 1) {
-   if (TWFunc::Path_Exists(t2w))
-     TWFunc::write_to_file(t2w, enable);
+   if (TWFunc::Path_Exists("/sys/android_touch/doubletap2wake"))
+     TWFunc::write_to_file("/sys/android_touch/doubletap2wake", "1");
        }
-       
-  if (DataManager::GetIntValue(RW_FSYNC_CHECK) == 1) {
-     if (TWFunc::Path_Exists(fsync))
-      TWFunc::write_to_file(fsync, disable);
-      }
-      
-  if (DataManager::GetIntValue(RW_FORCE_FAST_CHARGE_CHECK) == 1) {
-     if (TWFunc::Path_Exists(fast_charge)) {
-      TWFunc::write_to_file(fast_charge, enable);
-         }
-       }
-       
-       if (DataManager::GetIntValue(RW_PERFORMANCE_CHECK) == 1) {
-       DataManager::SetValue(RW_GOVERNOR_STABLE, performance);
-       for (i = 0; i < 9; i++) {
-       std::string k = to_string(i);
-       a = cpu_one + k + cpu_two;
-       if (TWFunc::Path_Exists(a))
-       TWFunc::write_to_file(a, performance);
-       }
-     }
-  
-     if (DataManager::GetIntValue(RW_POWERSAVE_CHECK) == 1) {
-   	DataManager::SetValue(RW_GOVERNOR_STABLE, powersave);
-       for (i = 0; i < 9; i++) {
-       std::string k = to_string(i);
-       a = cpu_one + k + cpu_two;
-       if (TWFunc::Path_Exists(a))
-       TWFunc::write_to_file(a, powersave);
-       }
-     }
-     
-     if (DataManager::GetIntValue(RW_BALANCE_CHECK) == 1) {
-   	DataManager::SetValue(RW_GOVERNOR_STABLE, interactive);
-       for (i = 0; i < 9; i++) {
-       std::string k = to_string(i);
-       a = cpu_one + k + cpu_two;
-       if (TWFunc::Path_Exists(a))
-       TWFunc::write_to_file(a, interactive);
-       }
-     }  
-	string info = TWFunc::System_Property_Get("ro.build.display.id");
-	if (info.empty()) {
+    
+	info = TWFunc::System_Property_Get("ro.build.display.id");
+	if (info.empty())
 		LOGINFO("ROM Status: Is not installed\n");
-	} else {
-	LOGINFO("ROM Status: %s\n", info.c_str());
-	}
-	string wolf_res = "/sdcard/WOLF.res";
-	string resource_folder = wolf_res + "/FILES";
-    string config_aroma_path = wolf_res + "/aromafm.cfg";
-    string ramdisk_folder = "/WolfShit";
-    string wolfshit_path = ramdisk_folder + "/AromaFM/AromaFM.cfg";
-    if (TWFunc::Path_Exists(ramdisk_folder.c_str())) {
-     DataManager::SetValue("rw_resource_dir", ramdisk_folder.c_str());
-      if (TWFunc::Path_Exists(config_aroma_path)) {
-     TWFunc::copy_file(config_aroma_path, wolfshit_path, 0644);
-     }
-    } else {
-    DataManager::SetValue("rw_resource_dir", resource_folder.c_str());
-	 }	
+	     else 
+	    LOGINFO("ROM Status: %s\n", info.c_str());
    }
+  
 
-
+     
+     
 
 void TWFunc::copy_kernel_log(string curr_storage) {
 	std::string dmesgDst = curr_storage + "/dmesg.log";
@@ -1519,284 +1296,8 @@ void TWFunc::create_fingerprint_file(string file_path, string fingerprint) {
         file.open (file_path.c_str());
         file << fingerprint;
         file.close();
-	    tw_set_default_metadata(file_path.c_str());
-}
-
-bool TWFunc::Verify_Incremental_Package(string fingerprint, string metadatafp, string metadatadevice) {
-string brand_property = "ro.product.brand";
-string androidversion = TWFunc::System_Property_Get("ro.build.version.release");
-string buildpropbrand = TWFunc::System_Property_Get(brand_property);
-string buildid = TWFunc::System_Property_Get("ro.build.id");
-string buildincremental = TWFunc::System_Property_Get("ro.build.version.incremental");
-string buildtags = TWFunc::System_Property_Get("ro.build.tags");
-string buildtype = TWFunc::System_Property_Get("ro.build.type");
-if (!metadatadevice.empty() && metadatadevice.size() >= 4 && !fingerprint.empty() && fingerprint.size() > RW_MIN_EXPECTED_FP_SIZE && fingerprint.find(metadatadevice) == std::string::npos) {
-	LOGINFO("OTA_ERROR: %s\n", metadatadevice.c_str());
-    LOGINFO("OTA_ERROR: %s\n", fingerprint.c_str());
-    return false;
-	}
-	if (!metadatadevice.empty() && metadatadevice.size() >= 4 && !metadatafp.empty() && metadatafp.size() > RW_MIN_EXPECTED_FP_SIZE && metadatafp.find(metadatadevice) == std::string::npos) {
-	LOGINFO("OTA_ERROR: %s\n", metadatadevice.c_str());
-    LOGINFO("OTA_ERROR: %s\n", metadatafp.c_str());
-    return false;
-	}
-
-if (!fingerprint.empty() && fingerprint.size() > RW_MIN_EXPECTED_FP_SIZE) {
-   if (!buildpropbrand.empty() && buildpropbrand.size() >= 3) {
-        if (fingerprint.find(buildpropbrand) == std::string::npos)
-        buildpropbrand[0] = toupper(buildpropbrand[0]);
-        if (fingerprint.find(buildpropbrand) == std::string::npos)
-        buildpropbrand[0] = tolower(buildpropbrand[0]);
-        if (fingerprint.find(buildpropbrand) == std::string::npos) {
-        LOGINFO("OTA_ERROR: %s\n", buildpropbrand.c_str());
-        LOGINFO("OTA_ERROR: %s\n", fingerprint.c_str());
-        return false;
-        }
-		} else {
-        char brand[PROPERTY_VALUE_MAX];
-        property_get(brand_property.c_str(), brand, "");
-        std::string brandstr = brand;
-        if (!brandstr.empty() && brandstr.size() >= 3 && fingerprint.find(brandstr) == std::string::npos) {
-        brandstr[0] = toupper(brandstr[0]);
-        if (!brandstr.empty() && brandstr.size() >= 3 && fingerprint.find(brandstr) == std::string::npos)
-        brandstr[0] = tolower(brandstr[0]);
-        if (!brandstr.empty() && brandstr.size() >= 3 && fingerprint.find(brandstr) == std::string::npos) {
-        LOGINFO("OTA_ERROR: %s\n", brandstr.c_str());
-        LOGINFO("OTA_ERROR: %s\n", fingerprint.c_str());
-        return false;
-        }
-		}
-	   }
-	if (!androidversion.empty() && androidversion.size() >= 3) {
-	if (fingerprint.find(androidversion) == std::string::npos) {
-		LOGINFO("OTA_ERROR: %s\n", androidversion.c_str());
-        LOGINFO("OTA_ERROR: %s\n", fingerprint.c_str());
-        return false;
-        }
-        }
-        if (!buildid.empty() && buildid.size() >= 3) {
-	    if (fingerprint.find(buildid) == std::string::npos) {
-		LOGINFO("OTA_ERROR: %s\n", buildid.c_str());
-        LOGINFO("OTA_ERROR: %s\n", fingerprint.c_str());
-        return false;
-        }
-        }
-        if (!buildincremental.empty() && buildincremental.size() >= 3) {
-	    if (fingerprint.find(buildincremental) == std::string::npos) {
-		LOGINFO("OTA_ERROR: %s\n", buildincremental.c_str());
-        LOGINFO("OTA_ERROR: %s\n", fingerprint.c_str());
-        return false;
-        }
-        }
-        if (!buildtags.empty() && buildtags.size() >= 5) {
-	    if (fingerprint.find(buildtags) == std::string::npos) {
-		LOGINFO("OTA_ERROR: %s\n", buildtags.c_str());
-        LOGINFO("OTA_ERROR: %s\n", fingerprint.c_str());
-        return false;
-        }
-        }
-        if (!buildtype.empty() && buildtype.size() >= 4) {
-        if (fingerprint.find(buildtype) == std::string::npos) {
-		LOGINFO("OTA_ERROR: %s\n", buildtype.c_str());
-        LOGINFO("OTA_ERROR: %s\n", fingerprint.c_str());
-        return false;
-        }
-        }
-	}
-	if (!metadatafp.empty() && metadatafp.size() > RW_MIN_EXPECTED_FP_SIZE) {
-   if (!buildpropbrand.empty() && buildpropbrand.size() >= 3) {
-   if (metadatafp.find(buildpropbrand) == std::string::npos)
-        buildpropbrand[0] = toupper(buildpropbrand[0]);
-        if (metadatafp.find(buildpropbrand) == std::string::npos)
-        buildpropbrand[0] = tolower(buildpropbrand[0]);
-        if (metadatafp.find(buildpropbrand) == std::string::npos) {
-        LOGINFO("OTA_ERROR: %s\n", buildpropbrand.c_str());
-        LOGINFO("OTA_ERROR: %s\n", metadatafp.c_str());
-        return false;
-        }
-		} else {
-        char brandvalue[PROPERTY_VALUE_MAX];
-        property_get(brand_property.c_str(), brandvalue, "");
-        std::string brandstrtwo = brandvalue;
-        if (!brandstrtwo.empty() && brandstrtwo.size() >= 3 && metadatafp.find(brandstrtwo) == std::string::npos) {
-        brandstrtwo[0] = toupper(brandstrtwo[0]);
-        if (!brandstrtwo.empty() && brandstrtwo.size() >= 3 && metadatafp.find(brandstrtwo) == std::string::npos)
-        brandstrtwo[0] = tolower(brandstrtwo[0]);
-        if (!brandstrtwo.empty() && brandstrtwo.size() >= 3 && metadatafp.find(brandstrtwo) == std::string::npos) {
-        LOGINFO("OTA_ERROR: %s\n", brandstrtwo.c_str());
-        LOGINFO("OTA_ERROR: %s\n", metadatafp.c_str());
-        return false;
-        }
-		}
-	   }
-	if (!androidversion.empty() && androidversion.size() >= 3) {
-	if (metadatafp.find(androidversion) == std::string::npos) {
-		LOGINFO("OTA_ERROR: %s\n", androidversion.c_str());
-        LOGINFO("OTA_ERROR: %s\n", metadatafp.c_str());
-        return false;
-        }
-        }
-        if (!buildid.empty() && buildid.size() >= 3) {
-	    if (metadatafp.find(buildid) == std::string::npos) {
-		LOGINFO("OTA_ERROR: %s\n", buildid.c_str());
-        LOGINFO("OTA_ERROR: %s\n", metadatafp.c_str());
-        return false;
-        }
-        }
-        if (!buildincremental.empty() && buildincremental.size() >= 3) {
-	    if (metadatafp.find(buildincremental) == std::string::npos) {
-		LOGINFO("OTA_ERROR: %s\n", buildincremental.c_str());
-        LOGINFO("OTA_ERROR: %s\n", metadatafp.c_str());
-        return false;
-        }
-        }
-        if (!buildtags.empty() && buildtags.size() >= 5) {
-	    if (metadatafp.find(buildtags) == std::string::npos) {
-		LOGINFO("OTA_ERROR: %s\n", buildtags.c_str());
-        LOGINFO("OTA_ERROR: %s\n", metadatafp.c_str());
-        return false;
-        }
-        }
-        if (!buildtype.empty() && buildtype.size() >= 4) {
-        if (metadatafp.find(buildtype) == std::string::npos) {
-		LOGINFO("OTA_ERROR: %s\n", buildtype.c_str());
-        LOGINFO("OTA_ERROR: %s\n", metadatafp.c_str());
-        return false;
-        }
-        }
-	}
-	
-	if (!metadatafp.empty() && metadatafp.size() > RW_MIN_EXPECTED_FP_SIZE && !fingerprint.empty() && fingerprint.size() > RW_MIN_EXPECTED_FP_SIZE && metadatafp != fingerprint) {
-	LOGINFO("OTA_ERROR: %s\n", fingerprint.c_str());
-    LOGINFO("OTA_ERROR: %s\n", metadatafp.c_str());
-    return false;
-	}
-	return true;
-	}
-	
-bool TWFunc::Verify_Loaded_OTA_Signature(std::string loadedfp, std::string ota_folder) {
-	    std::string datafp;
-        string ota_info = ota_folder + "/redwolf.info";
-		if (TWFunc::Path_Exists(ota_info)) {
-		if (TWFunc::read_file(ota_info, datafp) == 0) {
-	    if (!datafp.empty() && datafp.size() > RW_MIN_EXPECTED_FP_SIZE && !loadedfp.empty() && loadedfp.size() > RW_MIN_EXPECTED_FP_SIZE && datafp == loadedfp) {
-	    return true;
-	    }
-	   }
-	}
-	 return false;
-	}
-
-	
-	bool TWFunc::User_IS_Pirate_Cunt(void) {
-if (PartitionManager.Mount_By_Path("/data", false)) {
-std::istringstream pirateshit("cc.madkite.freedom\nzone.jasi2169.uretpatcher\nuret.jasi2169.patcher\np.jasi2169.al3\ncom.dimonvideo.luckypatcher\ncom.chelpus.lackypatch\ncom.forpda.lp\ncom.android.vending.billing.InAppBillingService.LUCK\ncom.android.vending.billing.InAppBillingService.CLON\ncom.android.vending.billing.InAppBillingService.LOCK\ncom.android.vending.billing.InAppBillingService.CRAC\ncom.android.vending.billing.InAppBillingService.LACK\ncom.android.vendinc\ncom.appcake\nac.market.store\norg.sbtools.gamehack\ncom.zune.gamekiller\ncom.aag.killer\ncom.killerapp.gamekiller\ncn.lm.sq\nnet.schwarzis.game_cih\norg.creeplays.hack\ncom.baseappfull.fwd\ncom.zmapp\ncom.dv.marketmod.installer\norg.mobilism.android\ncom.blackmartalpha\norg.blackmart.market\ncom.android.vendind\ncom.android.vending.billing.InAppBillingService.COIN");
-     int a = 0;
-     std::string line, data, sdcard;
-    while (getline(pirateshit, line)) {
-    	a = a + 1;
-    	data = "/data/data/" + line;
-        sdcard = "/sdcard/Android/data/" + line;
-        if (Path_Exists(data) || Path_Exists(sdcard)) {
-        if (a == 1)
-        DataManager::SetValue(RW_PIRATED_APP, "Freedom");
-        if (a == 2 || a == 3 || a == 13 || a == 29)
-        DataManager::SetValue(RW_PIRATED_APP, "Uret Patcher");
-        if (a == 4)
-        DataManager::SetValue(RW_PIRATED_APP, "Pirated Action Launcher 3");
-        if (a >= 5 && a <= 12 || a == 30)
-        DataManager::SetValue(RW_PIRATED_APP, "Lucky Patcher");
-        if (a == 14)
-        DataManager::SetValue(RW_PIRATED_APP, "Appcake");
-        if (a == 15)
-        DataManager::SetValue(RW_PIRATED_APP, "ACMarket");
-        if (a == 16)
-        DataManager::SetValue(RW_PIRATED_APP, "Game Hacker");
-        if (a == 17 || a == 19 || a == 20)
-        DataManager::SetValue(RW_PIRATED_APP, "Game Killer");
-        if (a == 18)
-        DataManager::SetValue(RW_PIRATED_APP, "AGK");
-        if (a == 21)
-        DataManager::SetValue(RW_PIRATED_APP, "CheatIng Hacker");
-        if (a == 22)
-        DataManager::SetValue(RW_PIRATED_APP, "Creeplays Hack");
-        if (a == 23)
-        DataManager::SetValue(RW_PIRATED_APP, "Base App");
-        if (a == 24)
-        DataManager::SetValue(RW_PIRATED_APP, "Zm App");
-        if (a == 25)
-        DataManager::SetValue(RW_PIRATED_APP, "MarketMod");
-        if (a == 26)
-        DataManager::SetValue(RW_PIRATED_APP, "Mobilism");
-        if (a == 27 || a == 28)
-        DataManager::SetValue(RW_PIRATED_APP, "Blackmart");
-   
-        return false;
-        }
-    }
-   }
-    return true;
-}
-	
-bool TWFunc::Get_Pirate_Variable(void) {
-if (DataManager::GetIntValue(RW_USER_IS_PIRATE) != 0) {
-std::string app;
-DataManager::GetValue(RW_PIRATED_APP, app);
-gui_msg(Msg(msg::kWarning, "wolf_stupid_shit_detected=Recovery won't allow you to to do this action until the pirating application called '{1}' is uninstalled from your device!")(app));
-return false;
-} else {
-return true;
-  }
-}
-
-void TWFunc::Dumwolf(bool do_unpack, bool is_boot) {
-string result, redwolf, output;
-std::string k = "/";
-std::string cd_dir = "cd ";
-output = "new-boot.img";
-std::string end_command = "; ";
-std::string magiskboot = "magiskboot";
-std::string magiskboot_sbin = "/sbin/" + magiskboot;
-std::string magiskboot_action = magiskboot + " --";
-std::string tmp = "/tmp/redwolf";
-std::string ramdisk = tmp + "/ramdisk";
-std::string cpio = "ramdisk.cpio";
-std::string tmp_cpio = tmp + k + cpio;
-std::string ramdisk_cpio = ramdisk + k + cpio;
-std::string dump_cpio = cd_dir + ramdisk + end_command + "cpio -i < \"" + cpio + "\"";
-if (!TWFunc::Path_Exists(magiskboot_sbin))
-TWFunc::tw_reboot(rb_recovery);
-if (!PartitionManager.Mount_By_Path("/system", false))
-return;
-TWPartition* Boot = PartitionManager.Find_Partition_By_Path("/boot");
-TWPartition* Recovery = PartitionManager.Find_Partition_By_Path("/recovery");
-if (Boot != NULL && Recovery != NULL) {
-if (is_boot)
-redwolf = Boot->Actual_Block_Device;
-else
-redwolf = Recovery->Actual_Block_Device;
-if (do_unpack) {
-if (TWFunc::Path_Exists(tmp))
-TWFunc::removeDir(tmp, false);
-if (TWFunc::Recursive_Mkdir(ramdisk)) {
-std::string unpack_partition = cd_dir + tmp + end_command + magiskboot_action + "unpack \"" + redwolf + "\"";
-Exec_Cmd(unpack_partition, result);
-rename(tmp_cpio.c_str(), ramdisk_cpio.c_str());
-Exec_Cmd(dump_cpio, result);
-unlink(ramdisk_cpio.c_str());
-}
-} else {
-std::string build_cpio = cd_dir + ramdisk + end_command + "find | cpio -o -H newc > \"" + tmp_cpio + "\"";
-Exec_Cmd(build_cpio, result);
-std::string repack_partition = cd_dir + tmp + end_command + magiskboot_action + "repack \"" + redwolf + "\"";
-Exec_Cmd(repack_partition, result);
-if (!PartitionManager.Flash_Repacked_Image(tmp, output, is_boot))
-LOGERR("TWFunc::Dumwolf: Failed to flash repacked image!");
-TWFunc::removeDir(tmp, false);
-}
-}
-PartitionManager.UnMount_By_Path("/system", false);
-}
+	    chmod(file_path.c_str(), 0640);
+}			                                
 
 
 bool TWFunc::isNumber(string strtocheck) {

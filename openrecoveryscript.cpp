@@ -46,6 +46,7 @@
 #include "variables.h"
 #include "adb_install.h"
 #include "data.hpp"
+#include "dumwolf.hpp"
 #include "adb_install.h"
 #include "fuse_sideload.h"
 #include "gui/gui.hpp"
@@ -626,10 +627,7 @@ int OpenRecoveryScript::Run_OpenRecoveryScript_Action() {
 		}
 	}
 	if (reboot) {
-	if (DataManager::GetIntValue(RW_CALL_DEACTIVATION) != 0) {
-		 TWFunc::Deactivation_Process();
-		 DataManager::SetValue(RW_CALL_DEACTIVATION, 0);
-		 }
+	     RWDumwolf::Deactivation_Process();
  		//Disable stock recovery reflashing
 		TWFunc::Disable_Stock_Recovery_Replace();
  		usleep(2000000); // Sleep for 2 seconds before rebooting

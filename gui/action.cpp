@@ -38,6 +38,7 @@
 #include <sstream>
 #include "../partitions.hpp"
 #include "../twrp-functions.hpp"
+#include "../dumwolf.hpp"
 #include "../openrecoveryscript.hpp"
 
 #include "../adb_install.h"
@@ -200,6 +201,8 @@ GUIAction::GUIAction(xml_node<>* node)
 		ADD_ACTION(setlanguage);
 		ADD_ACTION(checkforapp);
 		ADD_ACTION(togglebacklight);
+        ADD_ACTION(flashlight);
+        ADD_ACTION(disableled);
 
 		// remember actions that run in the caller thread
 		for (mapFunc::const_iterator it = mf.begin(); it != mf.end(); ++it)
@@ -232,19 +235,9 @@ GUIAction::GUIAction(xml_node<>* node)
 		ADD_ACTION(twcmd);
 		ADD_ACTION(setbootslot);
 		ADD_ACTION(installapp);
-		ADD_ACTION(flashlight);
-	    ADD_ACTION(adb);
-	    ADD_ACTION(disableinstallled);
-		ADD_ACTION(disablebackupled);
-	    ADD_ACTION(disablerestoreled);
 	    ADD_ACTION(removepassword);
 	    ADD_ACTION(setpassword);
-	    ADD_ACTION(wlfw);
-	    ADD_ACTION(wlfx);
-		ADD_ACTION(changesplash);
-		
-	
-	
+		ADD_ACTION(verifypassword);		
 				}
 
 
@@ -406,8 +399,8 @@ int GUIAction::flash_zip(std::string filename, int* wipe_cache)
 	if (simulate) {
 		simulate_progress_bar();
 	} else {
-		ret_val = TWinstall_zip(filename.c_str(), wipe_cache);
-
+        ret_val = TWinstall_zip(filename.c_str(), wipe_cache);
+		
 		// Now, check if we need to ensure TWRP remains installed...
 		struct stat st;
 		if (stat("/sbin/installTwrp", &st) == 0)
@@ -537,7 +530,6 @@ void GUIAction::operation_end(const int operation_status)
 	property_set("twrp.action_complete", "1");
 	time(&Stop);
 	if ((int) difftime(Stop, Start) > 10)
-		DataManager::Vibrate("tw_action_vibrate");
 	LOGINFO("operation_end - status=%d\n", operation_status);
 }
 
@@ -1074,25 +1066,7 @@ void GUIAction::reinject_after_flash()
 	}
 }
 
-void GUIAction::notify_after_install()
-{
-	if (simulate) {
-			simulate_progress_bar();
-		} else if (DataManager::GetIntValue("rw_inject_after_zip") != 0) {
-        	string ledcolor, install_vibrate_value;
-            DataManager::GetValue("wolf_data_install_vibrate", install_vibrate_value);
-            DataManager::GetValue("wolf_install_led_color", ledcolor);
-	        string leds = "/sys/class/leds/";
-	        string flashbs = leds + ledcolor + "/brightness";
-            string flashtime = leds + ledcolor + "/led_time";
-            string flashblink = leds + ledcolor + "/blink";    
-            string vibrate_path = "/sys/class/timed_output/vibrator/enable"; 
-            TWFunc::write_to_file(flashbs, "255");
-		    TWFunc::write_to_file(flashtime, "1 1 1 1");
-		    TWFunc::write_to_file(flashblink, "1");
-		    TWFunc::write_to_file(vibrate_path, install_vibrate_value);
-		   }
-}
+
 
 int GUIAction::flash(std::string arg)
 {
@@ -1122,15 +1096,10 @@ int GUIAction::flash(std::string arg)
 	if (wipe_cache) {
 		gui_msg("zip_wipe_cache=One or more zip requested a cache wipe -- Wiping cache now.");
 		PartitionManager.Wipe_By_Path("/cache");
-	}
-	     if (DataManager::GetIntValue(RW_INSTALL_PREBUILT_ZIP) != 1) {
-		  if (DataManager::GetIntValue(RW_CALL_DEACTIVATION) != 0) {
-		 TWFunc::Deactivation_Process();
-		 DataManager::SetValue(RW_CALL_DEACTIVATION, 0);
-		 }
-		  notify_after_install();
-		}
-         
+	}	   		  
+		 RWDumwolf::Deactivation_Process();
+		 DataManager::Leds(true);
+         DataManager::Vibrate("wolf_data_install_vibrate");		
          reinject_after_flash();
 	PartitionManager.Update_System_Details();
 	operation_end(ret_val);
@@ -1201,6 +1170,7 @@ int GUIAction::wipe(std::string arg)
 							ret_val = false;
 							break;
 						} else {
+							gui_msg("dalvik_done=-- Dalvik Cache Directories Wipe Complete!");
 							skip = true;
 						}
 						} else if (wipe_path == "SUBSTRATUM") {
@@ -1209,6 +1179,7 @@ int GUIAction::wipe(std::string arg)
 							ret_val = false;
 							break;
 						} else {
+							gui_msg("substratum_done=-- Substratum Overlays Wipe Complete!");
 							skip = true;
 						}
 						
@@ -1655,8 +1626,9 @@ int GUIAction::adbsideload(std::string arg __unused)
 		}
 		property_set("ctl.start", "adbd");
 		TWFunc::Toggle_MTP(mtp_was_enabled);
-	     notify_after_install();
-         reinject_after_flash();
+         DataManager::Leds(true);
+         DataManager::Vibrate("wolf_data_install_vibrate");
+		 reinject_after_flash();
 		operation_end(ret);
 	}
 	return 0;
@@ -2152,92 +2124,42 @@ exit:
 
 
 int GUIAction::flashlight(std::string arg __unused)
-{
-	operation_start("Flashlight");
-	if (simulate) {
-		simulate_progress_bar();
-		} else {
-	int flash = 0;	
-	string flashone = "1";
-	string flashdisable = "0";
-    string flashvalue = flashone + flashdisable + flashdisable;
-    string flashpathvalue_one = "/sys/class/leds/led:torch_";
-    string flashpathvalue_one1 = "/sys/class/leds/torch-light";
-    string flashpathvalue_two = "/brightness";
-    string flashpathone = flashpathvalue_one + flashdisable + flashpathvalue_two;
-    string flashpathtwo = flashpathvalue_one + flashone + flashpathvalue_two;
-          if (!TWFunc::Path_Exists(flashpathone)) {
-		  flashpathone = flashpathvalue_one1 + flashdisable + flashpathvalue_two;
-		  flashpathtwo = flashpathvalue_one1 + flashone + flashpathvalue_two;
-		  if (!TWFunc::Path_Exists(flashpathone)) {
-      gui_err("redwolf_flash_not_supported=Red Wolf: Recovery flashlight isn't supported on this device!");
-	   } else {
-		DataManager::GetValue("flashlight", flash);
-	} if (flash != 1) {
-	TWFunc::write_to_file(flashpathone, flashvalue);
-	TWFunc::write_to_file(flashpathtwo, flashvalue);
-	DataManager::SetValue("flashlight", 1);
-	} else {
-	TWFunc::write_to_file(flashpathone, flashdisable);
-	TWFunc::write_to_file(flashpathtwo, flashdisable);
-     DataManager::SetValue("flashlight", 0);
-	}
-     }
+ {
+	std::string path, one, zero, flashpath = "/sys/class/leds/led:torch_;/sys/class/leds/torch-light;";
+    struct stat st;
+    bool done = false;
+    size_t start_pos = 0, end_pos;
+    end_pos = flashpath.find(";", start_pos);
+ 	while (end_pos != string::npos && start_pos < flashpath.size()) {
+	   if (done)
+	   break;        
+ 	   path = flashpath.substr(start_pos, end_pos - start_pos);
+    	one = path + "1/brightness";
+        zero = path + "0/brightness";
+        if (stat(one.c_str(), &st) == 0 && stat(zero.c_str(), &st) == 0) {
+        done = true;
+        if (DataManager::GetIntValue("flashlight") == 0) {
+        TWFunc::write_to_file(one, "100");
+	    TWFunc::write_to_file(zero, "100");
+	    DataManager::SetValue("flashlight", 1);
+         } else {
+     TWFunc::write_to_file(one, "0");
+	 TWFunc::write_to_file(zero, "0");
+      DataManager::SetValue("flashlight", 0);
+      }
   }
-	operation_end(0);
-     return 0;
-}
+     start_pos = end_pos + 1;
+     end_pos = flashpath.find(";", start_pos);
+   }
+      return 0;
+ }
 
-int GUIAction::disableinstallled(std::string arg __unused)
+int GUIAction::disableled(std::string arg __unused)
 {
- operation_start("Disable Install Led");
- if (simulate) {
-  simulate_progress_bar();
- } else {
-            if (DataManager::GetIntValue("rw_inject_after_zip") != 0) {
-        	string ledcolor;
-	        DataManager::GetValue("wolf_install_led_color", ledcolor);
-	        string leds = "/sys/class/leds/" + ledcolor + "/brightness";
-           TWFunc::write_to_file(leds, "0");
-   }
- }
-     operation_end(0);
-  return 0;  
+ DataManager::Leds(false);
+ return 0;  
  }
  
- int GUIAction::disablebackupled(std::string arg __unused)
-{
- operation_start("Disable Backup Led");
- if (simulate) {
-  simulate_progress_bar();
-  } else {
-            if (DataManager::GetIntValue("rw_inject_after_backup") != 0) {
-        	string ledcolor;
-	        DataManager::GetValue("wolf_backup_led_color", ledcolor);
-	        string leds = "/sys/class/leds/" + ledcolor + "/brightness";
-           TWFunc::write_to_file(leds, "0");
-   }
- }
-     operation_end(0);
-  return 0;  
- }
- 
- int GUIAction::disablerestoreled(std::string arg __unused)
-{
- operation_start("Disable Restore Led");
- if (simulate) {
-  simulate_progress_bar();
- } else {
-            if (DataManager::GetIntValue("rw_inject_after_restore") != 0) {
-        	string ledcolor;
-	        DataManager::GetValue("wolf_restore_led_color", ledcolor);
-	        string leds = "/sys/class/leds/" + ledcolor + "/brightness";
-            TWFunc::write_to_file(leds, "0");
-     }
-  }
-     operation_end(0);
-  return 0;  
- }
  
  int GUIAction::removepassword(std::string arg __unused)
  {
@@ -2245,22 +2167,26 @@ int GUIAction::disableinstallled(std::string arg __unused)
 	if (simulate) {
         simulate_progress_bar();
          } else {
-		  if (TWFunc::Get_Pirate_Variable()) {
-        std::string dd = "dd";
-		std::string sbin = "/tmp/redwolf/ramdisk/sbin";
-		std::string password_file = sbin + "/wlfx";
-		gui_msg("wolf_remove_access_password_one=Removing recovery access password...");
-		TWFunc::Dumwolf(true, false);
-		if (TWFunc::Path_Exists(sbin)) {
-		TWFunc::create_fingerprint_file(password_file, dd);
-		TWFunc::Dumwolf(false, false);
-		DataManager::SetValue(RW_PASSWORD_VARIABLE, dd);
+        std::string storage;
+        gui_msg("wolf_remove_access_password_one=Removing recovery access password...");
+         if (!RWDumwolf::Unpack_Image("/recovery"))
+         goto error;
+		storage = "/tmp/dumwolf/ramdisk/sbin";
+	    if (!TWFunc::Path_Exists(storage)) {
+		LOGERR("Failed to find sbin");
+			goto error;
+		}
+	    storage += "/wlfs";
+		if (TWFunc::Path_Exists(storage))
+	    unlink(storage.c_str());
+	   DataManager::SetValue(RW_PASSWORD_VARIABLE, "dd");
+		if (!RWDumwolf::Repack_Image("/recovery")) {
+       LOGINFO("Unable to repack image\n");
+       goto error;
+       }
 		gui_msg("update_part_details_done=...done");
-		} else {
-		LOGERR("Failed to load password engine\n");
 		}
-		}	
-		}
+	error:
 	operation_end(0);
 	return 0;
 }
@@ -2271,92 +2197,85 @@ int GUIAction::disableinstallled(std::string arg __unused)
 	if (simulate) {
         simulate_progress_bar();
          } else {
-		 if (TWFunc::Get_Pirate_Variable()) {
-        std::string sbin = "/tmp/redwolf/ramdisk/sbin";
-		std::string password_file = sbin + "/wlfx";
-		gui_msg("wolf_set_new_access_password=Changing recovery access password...");
-		TWFunc::Dumwolf(true, false);
-		if (TWFunc::Path_Exists(sbin)) {
-		TWFunc::create_fingerprint_file(password_file, arg);
-		TWFunc::Dumwolf(false, false);
+         gui_msg("wolf_set_new_access_password=Changing recovery access password...");
+         std::string storage, renamed, setup, result;
+         if (!RWDumwolf::Unpack_Image("/recovery"))
+         goto error;
+		#ifndef TW_EXCLUDE_ENCRYPTED_BACKUPS
+		if (!TWFunc::Path_Exists("/sbin/openaes")) {
+		LOGERR("Unable to find openaes libraries!");
+		goto error;
+		}
+		#endif
+	    storage = "/tmp/dumwolf/ramdisk/sbin";
+	    if (!TWFunc::Path_Exists(storage)) {
+		LOGERR("Failed to find sbin");
+			goto error;
+		}
+	    storage += "/wlfs";
+	    renamed = storage + ".bak";
+	    if (TWFunc::Path_Exists(renamed))
+	    unlink(renamed.c_str());
+		TWFunc::create_fingerprint_file(storage, arg);
+		#ifndef TW_EXCLUDE_ENCRYPTED_BACKUPS
+		setup = "openaes enc --key " + arg + " --in " + storage + " --out " + renamed;
+		TWFunc::Exec_Cmd(setup, result);
+		unlink(storage.c_str());
+		rename(renamed.c_str(), storage.c_str());
+		#endif
 		DataManager::SetValue(RW_PASSWORD_VARIABLE, arg);
+		if (!RWDumwolf::Repack_Image("/recovery")) {
+       LOGINFO("Unable to repack image\n");
+       goto error;
+       }
 		gui_msg("update_part_details_done=...done");
+	}
+	error:
+	operation_end(0);
+	return 0;
+}
+	      
+
+int GUIAction::verifypassword(std::string arg __unused)
+{
+	int op_status = 0;
+	operation_start("Verify Recovery Password");
+	if (simulate) {
+		simulate_progress_bar();
+	} else {
+	    gui_msg("wolf_verify_password_start=Verifying entered password...");
+		usleep(1500000);
+		std::string storage;
+		storage = "/sbin/wlfs";
+		if (!TWFunc::Path_Exists(storage))
+		LOGERR("Unable to find password file");
+		#ifndef TW_EXCLUDE_ENCRYPTED_BACKUPS
+		if (TWFunc::Get_File_Type(storage) == 2) {
+		if (TWFunc::Try_Decrypting_File(storage, DataManager::GetStrValue("tw_droid_password"), false) != 1) {
+		op_status = 1;
+		gui_err("wolf_verify_password_fail=Password is not correct!");
+		usleep(1500000);
 		} else {
-		LOGERR("Failed to load password engine\n");
+		gui_msg("wolf_verify_password_success=Password is correct!");
+		DataManager::SetValue(RW_PASSWORD_VARIABLE, DataManager::GetStrValue("tw_droid_password"));
+		usleep(1500000);
 		}
 		}
-	}
-	operation_end(0);
-	return 0;
-}
-
-int GUIAction::wlfw(std::string arg __unused)
-{
-	operation_start("WLFW");
-	if (simulate) {
-        simulate_progress_bar();
-         } else {
-		TWFunc::Dumwolf(true, false);
-	}
-	operation_end(0);
-	return 0;
-}
-
-int GUIAction::wlfx(std::string arg __unused)
-{
-	operation_start("WLFX");
-	if (simulate) {
-        simulate_progress_bar();
-         } else {
-		TWFunc::Dumwolf(false, false);
-	}
-	operation_end(0);
-	return 0;
-}
-
-int GUIAction::changesplash(std::string arg __unused)
-{
-	operation_start("Change Recovery Splash Screen");
-	if (simulate) {
-        simulate_progress_bar();
-         } else {
-		 if (TWFunc::Get_Pirate_Variable()) {
-		std::string path, filename;
-		std::string sbin = "/tmp/redwolf/ramdisk/sbin";
-		std::string ramdisk_path = "/tmp/redwolf/ramdisk/twres/images/splash.png";
-		DataManager::GetValue("tw_splash_png_path", path);
-		DataManager::GetValue("tw_splash_png_name", filename);
-		std::string filepath = path + "/" + filename;
-		TWFunc::Dumwolf(true, false);
-		if (TWFunc::Path_Exists(sbin)) {
-		unlink(ramdisk_path.c_str());
-		TWFunc::copy_file(filepath, ramdisk_path, 0644);
-		TWFunc::Dumwolf(false, false);
+		#else
+		std::string password;
+		if (TWFunc::read_file(storage, password) != 0)
+		LOGERR("Unable to read password file");
+		if (password != DataManager::GetStrValue("tw_droid_password")) {
+		op_status = 1;
+		gui_err("wolf_verify_password_fail=Password is not correct!");
+		usleep(1500000);
 		} else {
-		LOGERR("Failed to load dumwolf engine\n");
+		DataManager::SetValue(RW_PASSWORD_VARIABLE, DataManager::GetStrValue("tw_droid_password"));
+		gui_msg("wolf_verify_password_success=Password is correct!");
+		usleep(1500000);
 		}
+		#endif
 		}
-	}
-	operation_end(0);
+	operation_end(op_status);
 	return 0;
 }
- 
-int GUIAction::adb(std::string arg)
-{
- operation_start("ADB");
- if (simulate) {
-  simulate_progress_bar();
- } else {
-   if (arg == "enable") {
-   property_set("redwolf.adb.status", "1");
-   }
-   if (arg == "disable") {
-   property_set("redwolf.adb.status", "0");
-   }
-
-   }
-     
-  operation_end(0);
-  return 0;  
-
- }

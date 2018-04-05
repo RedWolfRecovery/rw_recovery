@@ -738,7 +738,7 @@ int twrpTar::extract() {
 		int ret = extractTar();
 		return ret;
 	} else if (current_archive_type == ENCRYPTED) {
-		int ret = TWFunc::Try_Decrypting_File(tarfn, password);
+		int ret = TWFunc::Try_Decrypting_File(tarfn, password, true);
 		if (ret < 1) {
 			gui_msg(Msg(msg::kError, "fail_decrypt_tar=Failed to decrypt tar file '{1}'")(tarfn));
 			return -1;
@@ -822,10 +822,8 @@ int twrpTar::tarList(std::vector<TarListStruct> *TarList, unsigned thread_id) {
 				fs = 0; // Sending a 0 size to the pipe tells it to increment the file counter
 				write(progress_pipe_fd, &fs, sizeof(fs));
 			}
-			if (DataManager::GetIntValue(RW_RUN_SURVIVAL_BACKUP) != 1)
 			LOGINFO("addFile '%s' including root: %i\n", buf, include_root_dir);
 			if (addFile(buf, include_root_dir) != 0) {
-				if (DataManager::GetIntValue(RW_RUN_SURVIVAL_BACKUP) != 1)
 				LOGINFO("Error adding file '%s' to '%s'\n", buf, tarfn.c_str());
 				gui_err("backup_error=Error creating backup.");
 				return -1;
@@ -1538,7 +1536,7 @@ unsigned long long twrpTar::uncompressedSize(string filename) {
 		}
 	} else if (current_archive_type == COMPRESSED_ENCRYPTED) {
 		// File is encrypted and may be compressed
-		int ret = TWFunc::Try_Decrypting_File(filename, password);
+		int ret = TWFunc::Try_Decrypting_File(filename, password, true);
 		if (ret < 1) {
 			gui_msg(Msg(msg::kError, "fail_decrypt_tar=Failed to decrypt tar file '{1}'")(tarfn));
 			total_size = TWFunc::Get_File_Size(filename);

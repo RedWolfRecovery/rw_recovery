@@ -530,7 +530,6 @@ private:
 		switch (ch)
 		{
 			case 7: // BEL
-				DataManager::Vibrate("tw_button_vibrate");
 				break;
 			case 8: // BS
 				left();

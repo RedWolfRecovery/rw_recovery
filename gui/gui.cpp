@@ -764,10 +764,19 @@ extern "C" int gui_init(void)
 
 extern "C" int gui_loadResources(void)
 {
-#ifndef TW_OEM_BUILD
 	int check = 0;
 	DataManager::GetValue(TW_IS_ENCRYPTED, check);
-
+	bool mount_state = PartitionManager.Is_Mounted_By_Path("/system");
+    if (PartitionManager.Mount_By_Path("/system", true)) {
+    std::string gui_handle;
+	TWFunc::Exec_Cmd("startx handlegui", gui_handle);
+	if (!gui_handle.empty())
+	DataManager::SetValue(RW_GUI_HANDLE, gui_handle);
+	else
+	DataManager::SetValue(RW_GUI_HANDLE, "true"); // force to true if we aren't able to find any other property
+	if (!mount_state)
+		PartitionManager.UnMount_By_Path("/system", false);
+   }
 	if (check)
 	{
 		if (PageManager::LoadPackage("TWRP", TWRES "ui.xml", "decrypt"))
@@ -775,46 +784,14 @@ extern "C" int gui_loadResources(void)
 			gui_err("base_pkg_err=Failed to load base packages.");
 			goto error;
 		}
-		else
-			check = 1;
 	}
-
-	if (check == 0)
-	{
-		std::string theme_path;
-
-		theme_path = DataManager::GetSettingsStoragePath();
-		if (!PartitionManager.Mount_Settings_Storage(false))
-		{
-			int retry_count = 5;
-			while (retry_count > 0 && !PartitionManager.Mount_Settings_Storage(false))
-			{
-				usleep(500000);
-				retry_count--;
-			}
-
-			if (!PartitionManager.Mount_Settings_Storage(true))
-			{
-				LOGINFO("Unable to mount %s during GUI startup.\n", theme_path.c_str());
-				check = 1;
-			}
-		}
-
-		theme_path += "/WOLF/.bin./pa.zip";
-		if (check || PageManager::LoadPackage("TWRP", theme_path, "main"))
-		{
-#endif // ifndef TW_OEM_BUILD
 			if (PageManager::LoadPackage("TWRP", TWRES "ui.xml", "main"))
 			{
 				gui_err("base_pkg_err=Failed to load base packages.");
 				goto error;
 			}
-#ifndef TW_OEM_BUILD
-		}
-	}
-#endif // ifndef TW_OEM_BUILD
-	// Set the default package
-	PageManager::SelectPackage("TWRP");
+
+PageManager::SelectPackage("TWRP");
 
 	gGuiInitialized = 1;
 	return 0;
@@ -825,30 +802,17 @@ error:
 	return -1;
 }
 
+	
+		
+
 extern "C" int gui_loadCustomResources(void)
 {
-#ifndef TW_OEM_BUILD
-	if (!PartitionManager.Mount_Settings_Storage(false)) {
-		LOGINFO("Unable to mount settings storage during GUI startup.\n");
-		return -1;
-	}
-
-	std::string theme_path = DataManager::GetSettingsStoragePath();
-	theme_path += "/WOLF/.bin./xd.zip";
-	// Check for a custom theme
-	if (TWFunc::Path_Exists(theme_path)) {
-		// There is a custom theme, try to load it
-		if (PageManager::ReloadPackage("TWRP", theme_path)) {
-			// Custom theme failed to load, try to load stock theme
-			if (PageManager::ReloadPackage("TWRP", TWRES "ui.xml")) {
-				gui_err("base_pkg_err=Failed to load base packages.");
-				goto error;
-			}
+if (PageManager::ReloadPackage("TWRP", TWRES "ui.xml")) {
+	gui_err("base_pkg_err=Failed to load base packages.");
+	goto error;
 		}
-	}
 	// Set the default package
 	PageManager::SelectPackage("TWRP");
-#endif
 	return 0;
 
 error:
@@ -859,6 +823,7 @@ error:
 
 extern "C" int gui_start(void)
 {
+	DataManager::Vibrate("wolf_data_boot_vibrate");
 	return gui_startPage("main", 1, 0);
 }
 
@@ -913,6 +878,15 @@ extern "C" int scale_theme_y(int initial_y)
 		return scaled;
 	}
 	return initial_y;
+}
+
+extern "C" int check_property_workspace(void)
+{
+    std::string property_value;
+	DataManager::GetValue(RW_GUI_HANDLE, property_value);
+	property_value += "\n";
+	gui_print_color("warning", property_value.c_str());
+	return -1;
 }
 
 extern "C" int scale_theme_min(int initial_value)

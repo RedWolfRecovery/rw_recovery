@@ -202,6 +202,10 @@ bool twrpDigestDriver::Make_Digest(string Full_Filename) {
 	return true;
 }
 
+bool twrpDigestDriver::Verify_GUI_Digest_Status(void) {
+return (DataManager::GetStrValue(RW_GUI_HANDLE) == "true") ? false : true;
+}
+
 bool twrpDigestDriver::stream_file_to_digest(string filename, twrpDigest* digest) {
 	char buf[4096];
 	int bytes;

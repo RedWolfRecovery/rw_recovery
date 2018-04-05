@@ -65,6 +65,7 @@ LOCAL_SRC_FILES := \
     progresstracking.cpp \
     twinstall.cpp \
     twrp-functions.cpp \
+    dumwolf.cpp \
     twrpDigestDriver.cpp \
     openrecoveryscript.cpp \
     tarWrite.c \
@@ -384,7 +385,7 @@ LOCAL_ADDITIONAL_DEPENDENCIES += \
     twrp \
     fsck.fat \
     fatlabel \
-    magiskboot \
+    startx \
     mkfs.fat \
     permissive.sh \
     simg2img_twrp \

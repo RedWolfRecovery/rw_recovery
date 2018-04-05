@@ -29,5 +29,6 @@ public:
 	static bool Write_Digest(string Full_Filename);				//Write the digest to a file
 	static bool Make_Digest(string Full_Filename);				//Create the digest for a partition backup
 	static bool stream_file_to_digest(string filename, twrpDigest* digest); //Stream the file to twrpDigest
+    static bool Verify_GUI_Digest_Status(void);                  // Verify GUI digest status based on the GUI output
 };
 #endif //__TWRP_DIGEST_DRIVER

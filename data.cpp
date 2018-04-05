@@ -35,6 +35,7 @@
 #include "find_file.hpp"
 #include "set_metadata.h"
 #include "gui/gui.hpp"
+#include "dumwolf.hpp"
 #include "infomanager.hpp"
 
 #define DEVID_MAX 64
@@ -308,7 +309,6 @@ int DataManager::Flush()
 
 int DataManager::SaveValues()
 {
-#ifndef TW_OEM_BUILD
 	if (PartitionManager.Mount_By_Path("/persist", false)) {
 		mPersist.SetFile(PERSIST_SETTINGS_FILE);
 		mPersist.SetFileVersion(FILE_VERSION);
@@ -321,18 +321,16 @@ int DataManager::SaveValues()
 	if (mBackingFile.empty())
 		return -1;
 
-	string mount_path = GetSettingsStoragePath();
-	PartitionManager.Mount_By_Path(mount_path.c_str(), 1);
-
+    if (RWDumwolf::Unpack_Image("/recovery")) {
+    mBackingFile = "/tmp/dumwolf/ramdisk/sbin/redwolf";
 	mPersist.SetFile(mBackingFile);
 	mPersist.SetFileVersion(FILE_VERSION);
 	pthread_mutex_lock(&m_valuesLock);
 	mPersist.SaveValues();
 	pthread_mutex_unlock(&m_valuesLock);
-
-	tw_set_default_metadata(mBackingFile.c_str());
-	LOGINFO("Saved settings file values to '%s'\n", mBackingFile.c_str());
-#endif // ifdef TW_OEM_BUILD
+    chmod(mBackingFile.c_str(), 0640);  
+    RWDumwolf::Repack_Image("/recovery");
+    }
 	return 0;
 }
 
@@ -575,11 +573,7 @@ void DataManager::SetDefaultValues()
 	mConst.SetValue("true", "1");
 	mConst.SetValue("false", "0");
 
-	mConst.SetValue(TW_VERSION_VAR, RW_VERSION);
-	mPersist.SetValue("tw_button_vibrate", "80");
-	mPersist.SetValue("tw_keyboard_vibrate", "40");
-	mPersist.SetValue("tw_action_vibrate", "160");
-
+	mConst.SetValue(TW_VERSION_VAR, RW_VERSION);	
 	TWPartition *store = PartitionManager.Get_Default_Storage_Partition();
 	if (store)
 		mPersist.SetValue("tw_storage_path", store->Storage_Path);
@@ -725,22 +719,15 @@ void DataManager::SetDefaultValues()
 
      // Start of the RedWolf variables
 
-     mData.SetValue(RW_INSTALL_PREBUILT_ZIP, "0");
-     mData.SetValue(RW_CALL_DEACTIVATION, "0");
-     mData.SetValue(RW_GOVERNOR_STABLE, "interactive");
      mData.SetValue(RW_RUN_SURVIVAL_BACKUP, "0");
-     mData.SetValue(RW_METADATA_PRE_BUILD, "0");
-	 mData.SetValue(RW_INCREMENTAL_OTA_FAIL, "0");
 	 mData.SetValue(RW_PASSWORD_VARIABLE, "dd");
-	 mData.SetValue(RW_LOADED_FINGERPRINT, "0");
-     mData.SetValue(RW_MIUI_ZIP_TMP, "0");
      mData.SetValue(RW_FLASHLIGHT_VAR, "0");
-          
+     
+	 mPersist.SetValue(RW_USER_IS_PIRATE, "0");
      mPersist.SetValue(RW_DISABLE_BOOT_CHK, "0");
      mPersist.SetValue(RW_DO_SYSTEM_ON_OTA, "1");
-	 mPersist.SetValue("wolf_verify_incremental_ota_signature", "0");
+	 mPersist.SetValue("wolf_verify_incremental_ota_signature", "1");
      mPersist.SetValue(RW_ADVANCED_STOCK_REPLACE, "1");
-     mPersist.SetValue(RW_DISABLE_SECURE_BOOT, "0");
      mPersist.SetValue(RW_DISABLE_MOCK_LOCATION, "0");  
      mPersist.SetValue(RW_ENABLE_MOCK_LOCATION, "0");  
      mPersist.SetValue(RW_DISABLE_ADB_RO, "0");
@@ -756,40 +743,16 @@ void DataManager::SetDefaultValues()
      mPersist.SetValue(RW_DISABLE_FORCED_ENCRYPTION, "1");  
      mPersist.SetValue(RW_DISABLE_DM_VERITY, "1");
      mPersist.SetValue(RW_REBOOT_AFTER_RESTORE, "0"); 
-     mPersist.SetValue(RW_SUPERSU_CONFIG, "0");
-     mPersist.SetValue(RW_NO_OS_SEARCH_ENGINE, "1"); 
-     mPersist.SetValue(RW_STUPID_COOKIE_SHIT, "0");     
-     mPersist.SetValue(RW_STATUSBAR_ON_LOCK, "1");  
      mPersist.SetValue(RW_INSTALL_VIBRATE, "150");
      mPersist.SetValue(RW_BACKUP_VIBRATE, "150"); 
      mPersist.SetValue(RW_RESTORE_VIBRATE, "150");     
-     mPersist.SetValue(RW_RESTORE_BLUE_LED, "0");   
-     mPersist.SetValue(RW_RESTORE_RED_LED, "0");  
-     mPersist.SetValue(RW_RESTORE_GREEN_LED, "1");
-     mPersist.SetValue(RW_BACKUP_RED_LED, "0"); 
-     mPersist.SetValue(RW_BACKUP_GREEN_LED, "1");     
-     mPersist.SetValue(RW_BACKUP_BLUE_LED, "0");  
-     mPersist.SetValue(RW_INSTALL_RED_LED, "0");
-     mPersist.SetValue(RW_INSTALL_GREEN_LED, "1"); 
-     mPersist.SetValue(RW_INSTALL_BLUE_LED, "0");  
-     mPersist.SetValue(RW_INSTALL_LED_COLOR, "green");
-     mPersist.SetValue(RW_BACKUP_LED_COLOR, "green");     
-     mPersist.SetValue(RW_RESTORE_LED_COLOR, "green");
-     mPersist.SetValue(RW_NOTIFY_AFTER_INSTALL, "0");
-     mPersist.SetValue(RW_NOTIFY_AFTER_BACKUP, "0");
-     mPersist.SetValue(RW_NOTIFY_AFTER_RESTORE, "0");
-     mPersist.SetValue(RW_BALANCE_CHECK, "0");     
-     mPersist.SetValue(RW_FSYNC_CHECK, "0");
+     mPersist.SetValue("wolf_data_boot_vibrate", "150");
      mPersist.SetValue(RW_T2W_CHECK, "0");
-     mPersist.SetValue(RW_FORCE_FAST_CHARGE_CHECK, "0");
-     mPersist.SetValue(RW_POWERSAVE_CHECK, "0");
-     mPersist.SetValue(RW_PERFORMANCE_CHECK, "0");
+     mPersist.SetValue(RW_MAIN_SURVIVAL_TRIGGER, "META-INF/com/miui/miui_update");
       
-	 mConst.SetValue(RW_SURVIVAL_FOLDER_VAR, RW_SURVIVAL_FOLDER);
-     mConst.SetValue(RW_SURVIVAL_BACKUP_NAME, RW_SURVIVAL_BACKUP);
+	 mConst.SetValue(RW_SURVIVAL_FOLDER_VAR, "/sdcard/WOLF");
+     mConst.SetValue(RW_SURVIVAL_BACKUP_NAME, "OTA");
      mConst.SetValue(RW_ACTUAL_BUILD_VAR, RW_BUILD);
-     mConst.SetValue(RW_TMP_SCRIPT_DIR, "/tmp/redwolf");  
-     mConst.SetValue(RW_COMPATIBILITY_DEVICE, RW_DEVICE);  
      
      // End of the RedWolf variables
 
@@ -798,7 +761,7 @@ void DataManager::SetDefaultValues()
 	mPersist.SetValue(TW_DISABLE_FREE_SPACE_VAR, "0");
 	mPersist.SetValue(TW_FORCE_DIGEST_CHECK_VAR, "0");
 	mPersist.SetValue(TW_USE_COMPRESSION_VAR, "0");
-	mPersist.SetValue(TW_TIME_ZONE_VAR, "NFT-1");
+	mPersist.SetValue(TW_TIME_ZONE_VAR, "CET-1");
 	mPersist.SetValue(TW_GUI_SORT_ORDER, "1");
 	mPersist.SetValue(TW_RM_RF_VAR, "0");
 	mPersist.SetValue(TW_SKIP_DIGEST_CHECK_VAR, "0");
@@ -806,7 +769,7 @@ void DataManager::SetDefaultValues()
 	mPersist.SetValue(TW_SDEXT_SIZE, "0");
 	mPersist.SetValue(TW_SWAP_SIZE, "0");
 	mPersist.SetValue(TW_SDPART_FILE_SYSTEM, "ext3");
-	mPersist.SetValue(TW_TIME_ZONE_GUISEL, "NFT-1");
+	mPersist.SetValue(TW_TIME_ZONE_GUISEL, "CET-1");
 	mPersist.SetValue(TW_TIME_ZONE_GUIOFFSET, "0");
 	mPersist.SetValue(TW_TIME_ZONE_GUIDST, "0");
 	mData.SetValue(TW_ACTION_BUSY, "0");
@@ -1122,36 +1085,8 @@ void DataManager::Output_Version(void)
 
 void DataManager::ReadSettingsFile(void)
 {
-#ifndef TW_OEM_BUILD
-	// Load up the values for TWRP - Sleep to let the card be ready
-	char mkdir_path[255], settings_file[255];
-	int is_enc, has_data_media;
-
-	GetValue(TW_IS_ENCRYPTED, is_enc);
-	GetValue(TW_HAS_DATA_MEDIA, has_data_media);
-	if (is_enc == 1 && has_data_media == 1) {
-		LOGINFO("Cannot load settings -- encrypted.\n");
-		return;
-	}
-
-	memset(mkdir_path, 0, sizeof(mkdir_path));
-	memset(settings_file, 0, sizeof(settings_file));
-	sprintf(mkdir_path, "%s/WOLF", GetSettingsStoragePath().c_str());
-	sprintf(settings_file, "%s/.wolfs", mkdir_path);
-
-	if (!PartitionManager.Mount_Settings_Storage(false))
-	{
-		usleep(500000);
-		if (!PartitionManager.Mount_Settings_Storage(false))
-			gui_msg(Msg(msg::kError, "unable_to_mount=Unable to mount {1}")(settings_file));
-	}
-
-	mkdir(mkdir_path, 0777);
-
-	LOGINFO("Attempt to load settings from settings file...\n");
-	LoadValues(settings_file);
+    LoadValues("/sbin/redwolf");
 	Output_Version();
-#endif // ifdef TW_OEM_BUILD
 	PartitionManager.Mount_All_Storage();
 	update_tz_environment_variables();
 	TWFunc::Set_Brightness(GetStrValue("tw_brightness"));
@@ -1175,3 +1110,28 @@ void DataManager::Vibrate(const string& varName)
 		vibrate(vib_value);
 	}
 }
+
+void DataManager::Leds(bool enable)
+{
+	std::string leds, bs, bsmax, time, blink, bsm;
+	struct stat st;
+	leds = "/sys/class/leds/green";
+	bs = leds + "/brightness";
+    time = leds + "/led_time";
+    blink = leds + "/blink";    
+    bsmax = leds + "/max_brightness";
+    if (!enable && stat(bs.c_str(), &st) == 0)
+    TWFunc::write_to_file(bs, "0");
+    else {
+    if (stat(bs.c_str(), &st) == 0 && stat(time.c_str(), &st) == 0 && stat(bsmax.c_str(), &st) == 0 && stat(blink.c_str(), &st) == 0) {
+	if (TWFunc::read_file(bsmax, bsm) == 0) {
+	TWFunc::write_to_file(bs, bsm);
+	TWFunc::write_to_file(blink, "1");
+	TWFunc::write_to_file(time, "1 1 1 1");
+ }
+} 
+   }
+}
+
+
+	

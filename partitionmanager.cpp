@@ -779,9 +779,6 @@ int TWPartitionManager::Run_Backup(bool adbbackup) {
 
 	if (!Mount_Current_Storage(true))
 		return false;
-		
-		if (!TWFunc::Get_Pirate_Variable())
-	    return false;
 
 	DataManager::GetValue(TW_SKIP_DIGEST_GENERATE_VAR, skip_digest);
 	if (skip_digest == 0)
@@ -802,16 +799,14 @@ int TWPartitionManager::Run_Backup(bool adbbackup) {
 	part_settings.Backup_Folder = part_settings.Backup_Folder + "/" + Backup_Name;
 
 	LOGINFO("Backup_Folder is: '%s'\n", part_settings.Backup_Folder.c_str());
-
 	LOGINFO("Calculating backup details...\n");
+	if (twrpDigestDriver::Verify_GUI_Digest_Status())
+	return check_property_workspace();
 	DataManager::GetValue("tw_backup_list", Backup_List);
 	if (!Backup_List.empty()) {
 		end_pos = Backup_List.find(";", start_pos);
 		while (end_pos != string::npos && start_pos < Backup_List.size()) {
 			backup_path = Backup_List.substr(start_pos, end_pos - start_pos);
-			if (backup_path == "WIFI" || backup_path == "BLUETOOTH" || backup_path == "HOSTS") {
-				partition_count++;
-				} else {
 			part_settings.Part = Find_Partition_By_Path(backup_path);
 			if (part_settings.Part != NULL) {
 				partition_count++;
@@ -834,9 +829,7 @@ int TWPartitionManager::Run_Backup(bool adbbackup) {
 				}
 			} else {
 				gui_msg(Msg(msg::kError, "unable_to_locate_partition=Unable to locate '{1}' partition for backup calculations.")(backup_path));
-			}
-			}
-			
+			}						
 			start_pos = end_pos + 1;
 			end_pos = Backup_List.find(";", start_pos);
 		}
@@ -896,21 +889,12 @@ int TWPartitionManager::Run_Backup(bool adbbackup) {
 		if (stop_backup.get_value() != 0)
 			return -1;
 		backup_path = Backup_List.substr(start_pos, end_pos - start_pos);
-		if (backup_path == "WIFI" || backup_path == "BLUETOOTH" || backup_path == "HOSTS") {
-			if (backup_path == "WIFI")
-            Backup_Wifi_Files(&part_settings);
-            if (backup_path == "BLUETOOTH")
-            Backup_Bluetooth_Files(&part_settings);
-            if (backup_path == "HOSTS")
-            Backup_Hosts_Files(&part_settings);
-			} else {
 		part_settings.Part = Find_Partition_By_Path(backup_path);
 		if (part_settings.Part != NULL) {
 			if (!Backup_Partition(&part_settings))
 				return false;
 		} else {
-			gui_msg(Msg(msg::kError, "unable_to_locate_partition=Unable to locate '{1}' partition for backup calculations.")(backup_path));
-		}
+			gui_msg(Msg(msg::kError, "unable_to_locate_partition=Unable to locate '{1}' partition for backup calculations.")(backup_path));		
 		}
 		start_pos = end_pos + 1;
 		end_pos = Backup_List.find(";", start_pos);
@@ -963,7 +947,8 @@ int TWPartitionManager::Run_Backup(bool adbbackup) {
 	gui_msg(Msg("total_backed_size=[{1} MB TOTAL BACKED UP]")(actual_backup_size));
 	Update_System_Details();
 	UnMount_Main_Partitions();
-	Notify_On_Finished_Backup();
+	DataManager::Leds(true);
+	DataManager::Vibrate("wolf_data_backup_vibrate");
 	gui_msg(Msg(msg::kHighlight, "backup_completed=[BACKUP COMPLETED IN {1} SECONDS]")(total_time)); // the end
 	string backup_log = part_settings.Backup_Folder + "/recovery.log";
 	TWFunc::copy_file("/tmp/recovery.log", backup_log, 0644);
@@ -1039,9 +1024,6 @@ int TWPartitionManager::Run_Restore(const string& Restore_Name) {
 	gui_msg("restore_started=[RESTORE STARTED]");
 	gui_msg(Msg("restore_folder=Restore folder: '{1}'")(Restore_Name));
 
-   if (!TWFunc::Get_Pirate_Variable())
-	    return false;
-
 	if (!Mount_Current_Storage(true))
 		return false;
 
@@ -1053,16 +1035,15 @@ int TWPartitionManager::Run_Restore(const string& Restore_Name) {
 	} else {
 		gui_msg("skip_digest=Skipping Digest check based on user setting.");
 	}
-	gui_msg("calc_restore=Calculating restore details...");
+	if (twrpDigestDriver::Verify_GUI_Digest_Status())
+	return check_property_workspace();
+	gui_msg("calc_restore=Calculating restore details...");	
 	DataManager::GetValue("tw_restore_selected", Restore_List);
 
 	if (!Restore_List.empty()) {
 		end_pos = Restore_List.find(";", start_pos);
 		while (end_pos != string::npos && start_pos < Restore_List.size()) {
 			restore_path = Restore_List.substr(start_pos, end_pos - start_pos);
-			if (restore_path == "WIFI" || restore_path == "BLUETOOTH" || restore_path == "HOSTS") {
-				part_settings.partition_count++;
-				} else {
 			part_settings.Part = Find_Partition_By_Path(restore_path);
 			if (part_settings.Part != NULL) {
 				if (part_settings.Part->Mount_Read_Only) {
@@ -1092,7 +1073,6 @@ int TWPartitionManager::Run_Restore(const string& Restore_Name) {
 			} else {
 				gui_msg(Msg(msg::kError, "restore_unable_locate=Unable to locate '{1}' partition for restoring.")(restore_path));
 			}
-			}
 			start_pos = end_pos + 1;
 			end_pos = Restore_List.find(";", start_pos);
 		}
@@ -1114,14 +1094,7 @@ int TWPartitionManager::Run_Restore(const string& Restore_Name) {
 		end_pos = Restore_List.find(";", start_pos);
 		while (end_pos != string::npos && start_pos < Restore_List.size()) {
 			restore_path = Restore_List.substr(start_pos, end_pos - start_pos);
-            if (restore_path == "WIFI" || restore_path == "BLUETOOTH" || restore_path == "HOSTS") {
-			if (restore_path == "WIFI")
-            Restore_Wifi_Files(&part_settings);
-            if (restore_path == "BLUETOOTH")
-            Restore_Bluetooth_Files(&part_settings);
-            if (restore_path == "HOSTS")
-            Restore_Hosts_Files(&part_settings);
-			} else {
+
 			part_settings.Part = Find_Partition_By_Path(restore_path);
 			if (part_settings.Part != NULL) {
 				part_settings.partition_count++;
@@ -1129,7 +1102,6 @@ int TWPartitionManager::Run_Restore(const string& Restore_Name) {
 					return false;
 			} else {
 				gui_msg(Msg(msg::kError, "restore_unable_locate=Unable to locate '{1}' partition for restoring.")(restore_path));
-			}
 			}
 			start_pos = end_pos + 1;
 			end_pos = Restore_List.find(";", start_pos);
@@ -1139,7 +1111,8 @@ int TWPartitionManager::Run_Restore(const string& Restore_Name) {
 	UnMount_By_Path("/system", false);
 	Update_System_Details();
 	UnMount_Main_Partitions();
-	Notify_On_Finished_Restore();
+	DataManager::Leds(true);
+	DataManager::Vibrate("wolf_data_restore_vibrate");
 	time(&rStop);
 	gui_msg(Msg(msg::kHighlight, "restore_completed=[RESTORE COMPLETED IN {1} SECONDS]")((int)difftime(rStop,rStart)));
 	DataManager::SetValue("tw_file_progress", "");
@@ -1238,10 +1211,6 @@ void TWPartitionManager::Set_Restore_Files(string Restore_Name) {
 			if (extnlength == 6 && strncmp(extn, "win000", 6) != 0) continue;
 
 			TWPartition* Part = Find_Partition_By_Path(label);
-			if (strncmp(label, "WIFI", 4) == 0 || strncmp(label, "BLUETOOTH", 9) == 0 || strncmp(label, "HOSTS", 5) == 0) {
-           std::string custombackup(label);
-           Restore_List += custombackup + ";";
-           } else {
 			if (Part == NULL)
 			{
 				gui_msg(Msg(msg::kError, "unable_locate_part_backup_name=Unable to locate partition by backup name: '{1}'")(label));
@@ -1255,8 +1224,7 @@ void TWPartitionManager::Set_Restore_Files(string Restore_Name) {
 
 			if (!Part->Is_SubPartition)
 				Restore_List += Part->Backup_Path + ";";
-		}
-		}
+		}		
 		closedir(d);
 	}
 
@@ -1297,28 +1265,27 @@ int TWPartitionManager::Wipe_By_Path(string Path) {
 }
 
 int TWPartitionManager::Wipe_Substratum_Overlays(void) {
-	// Right now we don't support wipe of the overlays in the 
-	// Substratum Legacy mode
-	string data_path = "/data";
-	string data_system = data_path + "/system";
-	string overlays_xml = data_system + "/overlays.xml";
-	string theme_dir = data_system + "/theme";
-	string subs_dir = "/sdcard/substratum";
+	struct stat st;
+	vector <string> subs;
 	
-
-	if (!Mount_By_Path("/data", true))
+    if (!Mount_By_Path("/data", true))
 		return false;
+		gui_msg("wolf_wiping_subs=Wiping Substratum Files...");
 		
-		if (TWFunc::Path_Exists(overlays_xml))
-		unlink(overlays_xml.c_str());
+		subs.push_back("/data/system/theme");
+		subs.push_back("/sdcard/substratum");
 		
-		if (TWFunc::Path_Exists(theme_dir))
-		TWFunc::removeDir(theme_dir, false);
-
-        if (TWFunc::Path_Exists(subs_dir))
-		TWFunc::removeDir(subs_dir, false);
-		
-	gui_msg("substratum_done=-- Substratum Overlays Wipe Complete!");
+		for (unsigned i = 0; i < subs.size(); ++i) {
+		if (stat(subs.at(i).c_str(), &st) == 0) {
+			TWFunc::removeDir(subs.at(i), false);
+			gui_msg(Msg("cleaned=Cleaned: {1}...")(subs.at(i)));
+		}
+     }
+		if (stat("/data/system/overlays.xml", &st) == 0) {
+		unlink("/data/system/overlays.xml");
+		gui_msg(Msg("cleaned=Cleaned: {1}...")("/data/system/overlays.xml"));
+      }
+    gui_msg("substratum_done=-- Substratum Overlays Wipe Complete!");
 	return true;
 }
 
@@ -1549,145 +1516,11 @@ int TWPartitionManager::Resize_By_Path(string Path, bool Display_Error) {
 }
 
 
-void TWPartitionManager::Restore_Wifi_Files(PartitionSettings *part_settings) {
-	string result;
-	string redwolf = "redwolf.";
-	string wlfx = ".win";
-	string folder = "/data/misc/wifi";
-	string file = folder + "/wpa_supplicant.conf";
-	string filetwo = folder + "/WifiConfigStore.xml";
-	string backup = part_settings->Backup_Folder + "/" + "WIFI" + ".redwolf" + wlfx;
-	string backuptwo = part_settings->Backup_Folder + "/" + redwolf + "wifioreo" + ".wlfx";
-
-		if (TWFunc::Path_Exists(backup)) {
-			Mount_By_Path("/data", false);
-	  if (TWFunc::Path_Exists(file)) {
-		unlink(file.c_str());
-	}
-
-	if (!TWFunc::Path_Exists(folder)) {
-		if (!TWFunc::Recursive_Mkdir(folder)) {
-		gui_err("fail_backup_folder=Failed to make backup folder.");
-	}
-  }
-	if (TWFunc::Path_Exists(backuptwo)) {
-	if (TWFunc::Path_Exists(filetwo))
-	unlink(filetwo.c_str());
-	TWFunc::copy_file(backuptwo, filetwo, 0660);
-	 string Chowntwo = "chown 1010 " + filetwo;
-	 string Chgrptwo = "chgrp 1010 " + filetwo;
-	 TWFunc::Exec_Cmd(Chowntwo, result);
-	 TWFunc::Exec_Cmd(Chgrptwo, result);
-	}
 	
-	 TWFunc::copy_file(backup, file, 0660);
-	 string Chown = "chown 1010 " + file;
-	 string Chgrp = "chgrp 1010 " + file;
-	 TWFunc::Exec_Cmd(Chown, result);
-	 TWFunc::Exec_Cmd(Chgrp, result);
-	gui_msg(Msg("restoring=Restoring {1}...")("Wifi files"));
-	}
-}
-
-void TWPartitionManager::Restore_Bluetooth_Files(PartitionSettings *part_settings) {
-	string result;
-	string redwolf = "BLUETOOTH.";
-	string wlfx = ".win";
-	string folder = "/data/misc/bluedroid";
-	string file = folder + "/bt_config.conf";
-	string backup = part_settings->Backup_Folder + "/" + redwolf + "redwolf" + wlfx;
-
-		if (TWFunc::Path_Exists(backup)) {
-		Mount_By_Path("/data", false);
-	  if (TWFunc::Path_Exists(file)) {
-		unlink(file.c_str());
-	}
-	if (!TWFunc::Path_Exists(folder)) {
-		if (!TWFunc::Recursive_Mkdir(folder)) {
-		gui_err("fail_backup_folder=Failed to make backup folder.");
-	}
-  }
-	
-	 TWFunc::copy_file(backup, file, 0660);
-	 string Chown = "chown 1002 " + file;
-	 string Chgrp = "chgrp 3008 " + file;
-	 TWFunc::Exec_Cmd(Chown, result);
-	 TWFunc::Exec_Cmd(Chgrp, result);
-	gui_msg(Msg("restoring=Restoring {1}...")("Bluetooth files"));
-	}
-}
-
-
-
-void TWPartitionManager::Restore_Hosts_Files(PartitionSettings *part_settings) {
-	string redwolf = "HOSTS.";
-	string wlfx = ".win";
-	string folder = "/system/etc";
-	string file = folder + "hosts";
-	string backup = part_settings->Backup_Folder + "/" + redwolf + "redwolf" + wlfx;
-		if (TWFunc::Path_Exists(backup)) {
-		Mount_By_Path("/system", false);
-	  if (TWFunc::Path_Exists(file)) {
-		 unlink(file.c_str());
-	}
-	if (!TWFunc::Path_Exists(folder)) {
-		if (!TWFunc::Recursive_Mkdir(folder)) {
-		gui_err("fail_backup_folder=Failed to make backup folder.");
-	}
-  }
-	 TWFunc::copy_file(backup, file, 0660);
-	 gui_msg(Msg("restoring=Restoring {1}...")("Hosts files"));
-	}
-}
-
-void TWPartitionManager::Backup_Wifi_Files(PartitionSettings *part_settings) {
-	string redwolf = "redwolf.";
-	string wlfx = ".win";
-	string folder = "/data/misc/wifi";
-	string file = folder + "/wpa_supplicant.conf";
-	string filetwo = folder + "/WifiConfigStore.xml";
-	string backup = part_settings->Backup_Folder + "/" + "WIFI" + ".redwolf" + wlfx;
-    string backuptwo = part_settings->Backup_Folder + "/" + redwolf + "wifioreo" + ".wlfx";
-        Mount_By_Path("/data", false);
-		if (TWFunc::Path_Exists(file)) {
-	   TWFunc::copy_file(file, backup, 0660);
-	    tw_set_default_metadata(backup.c_str());
-	     if (TWFunc::Path_Exists(filetwo)) {
-	   TWFunc::copy_file(filetwo, backuptwo, 0660);
-	    tw_set_default_metadata(backuptwo.c_str());
-	    }
-	 gui_msg(Msg("backing_up=Backing up {1}...")("Wifi files"));
-	}
-}
-
-void TWPartitionManager::Backup_Bluetooth_Files(PartitionSettings *part_settings) {
-	string redwolf = "BLUETOOTH.";
-	string wlfx = ".win";
-	string file = "/data/misc/bluedroid/bt_config.conf";
-	string backup = part_settings->Backup_Folder + "/" + redwolf + "redwolf" + wlfx;
-       Mount_By_Path("/data", false);
-		if (TWFunc::Path_Exists(file)) {
-	 TWFunc::copy_file(file, backup, 0660);
-	gui_msg(Msg("backing_up=Backing up {1}...")("Bluetooth files"));
-	}
-}
-
-void TWPartitionManager::Backup_Hosts_Files(PartitionSettings *part_settings) {
-	string redwolf = "HOSTS.";
-	string wlfx = ".win";
-	string file = "/system/etc/hosts";
-	string backup = part_settings->Backup_Folder + "/" + redwolf + "redwolf" + wlfx;
-        Mount_By_Path("/system", false);
-		if (TWFunc::Path_Exists(file)) {
-	 TWFunc::copy_file(file, backup, 0660);
-	gui_msg(Msg("backing_up=Backing up {1}...")("Hosts files"));
-	}
-}
-
 void TWPartitionManager::Update_System_Details(void) {
 	std::vector<TWPartition*>::iterator iter;
 	int data_size = 0;
-
+    if (DataManager::GetIntValue(RW_RUN_SURVIVAL_BACKUP) != 1)
 	gui_msg("update_part_details=Updating partition details...");
 	TWFunc::SetPerformanceMode(true);
 	for (iter = Partitions.begin(); iter != Partitions.end(); iter++) {
@@ -1750,6 +1583,7 @@ void TWPartitionManager::Update_System_Details(void) {
 		}
 	}
 	TWFunc::SetPerformanceMode(false);
+	if (DataManager::GetIntValue(RW_RUN_SURVIVAL_BACKUP) != 1)
 	gui_msg("update_part_details_done=...done");
 	DataManager::SetValue(TW_BACKUP_DATA_SIZE, data_size);
 	string current_storage_path = DataManager::GetCurrentStoragePath();
@@ -2261,21 +2095,6 @@ void TWPartitionManager::Get_Partition_List(string ListType, std::vector<Partiti
 			}
 		}
 	} else if (ListType == "backup") {
-		struct PartitionList wifi;
-		wifi.Display_Name = gui_parse_text("{@wolf_wifi_data} (1MB)");
-		wifi.Mount_Point = "WIFI";
-		wifi.selected = 0;
-		Partition_List->push_back(wifi);
-		struct PartitionList bluetooth;
-		bluetooth.Display_Name = gui_parse_text("{@wolf_bluetooth_data} (1MB)");
-		bluetooth.Mount_Point = "BLUETOOTH";
-		bluetooth.selected = 0;
-		Partition_List->push_back(bluetooth);
-		struct PartitionList hosts;
-		hosts.Display_Name = gui_parse_text("{@wolf_hosts_data} (1MB)");
-		hosts.Mount_Point = "HOSTS";
-		hosts.selected = 0;
-		Partition_List->push_back(hosts);
 		char backup_size[255];
 		unsigned long long Backup_Size;
 		for (iter = Partitions.begin(); iter != Partitions.end(); iter++) {
@@ -2302,31 +2121,11 @@ void TWPartitionManager::Get_Partition_List(string ListType, std::vector<Partiti
 	} else if (ListType == "restore") {
 		string Restore_List, restore_path;
 		TWPartition* restore_part = NULL;
-
 		DataManager::GetValue("tw_restore_list", Restore_List);
 		if (!Restore_List.empty()) {
 			size_t start_pos = 0, end_pos = Restore_List.find(";", start_pos);
 			while (end_pos != string::npos && start_pos < Restore_List.size()) {
-				restore_path = Restore_List.substr(start_pos, end_pos - start_pos);
-				if (restore_path == "WIFI") {
-	            struct PartitionList wifi;
-		        wifi.Display_Name = gui_parse_text("{@wolf_wifi_data}");
-		        wifi.Mount_Point = "WIFI";
-		        wifi.selected = 1;
-		        Partition_List->push_back(wifi);
-		        } else if (restore_path == "BLUETOOTH") {
-		        struct PartitionList bluetooth;
-		        bluetooth.Display_Name = gui_parse_text("{@wolf_bluetooth_data}");
-		        bluetooth.Mount_Point = "BLUETOOTH";
-		        bluetooth.selected = 1;
-		        Partition_List->push_back(bluetooth);
-		        } else if (restore_path == "HOSTS") {
-		        struct PartitionList hosts;
-		        hosts.Display_Name = gui_parse_text("{@wolf_hosts_data}");
-		        hosts.Mount_Point = "HOSTS";
-		        hosts.selected = 1;
-		        Partition_List->push_back(hosts);
-		         } else {
+				restore_path = Restore_List.substr(start_pos, end_pos - start_pos);				
 				struct PartitionList part;
 				if (restore_path.compare("ADB_Backup") == 0) {
 					part.Display_Name = "ADB Backup";
@@ -2346,13 +2145,12 @@ void TWPartitionManager::Get_Partition_List(string ListType, std::vector<Partiti
 						Partition_List->push_back(part);
 					}
 				} else {
-					gui_msg(Msg(msg::kError, "restore_unable_locate=Unable to locate '{1}' partition for restoring.")(restore_path));
-				}
+					gui_msg(Msg(msg::kError, "restore_unable_locate=Unable to locate '{1}' partition for restoring.")(restore_path));				
 				}
 				start_pos = end_pos + 1;
 				end_pos = Restore_List.find(";", start_pos);
-			}
-		}
+				}
+			}		
 	} else if (ListType == "wipe") {
 		struct PartitionList dalvik;
 		dalvik.Display_Name = gui_parse_text("{@dalvik}");
@@ -3173,10 +2971,10 @@ void TWPartitionManager::Coldboot() {
 		Coldboot_Scan(&sysfs_entries, "/sys/block", 0);
 }
 
-int TWPartitionManager::Run_OTA_Survival_Backup(bool adbbackup) {
+
+	int TWPartitionManager::Run_Custom_Backup(void) {
 	PartitionSettings part_settings;
 	int partition_count = 0, disable_free_space_check = 0, skip_digest = 1;
-	int gui_adb_backup;
 	string Backup_Name, backup_path, Backup_List;
 	unsigned long long total_bytes = 0, free_space = 0;
 	TWPartition* storage = NULL;
@@ -3195,42 +2993,39 @@ int TWPartitionManager::Run_OTA_Survival_Backup(bool adbbackup) {
 	part_settings.img_bytes = 0;
 	part_settings.file_bytes = 0;
 	part_settings.PM_Method = PM_BACKUP;
+	part_settings.adbbackup = false;
+    part_settings.generate_digest = false;
 
     TWPartition *redwolf = Get_Default_Storage_Partition();
 	if (redwolf)
     DataManager::SetValue("tw_storage_path", redwolf->Storage_Path);
     else
     DataManager::SetValue("tw_storage_path", "/");
+    time(&total_start);
 
-	DataManager::GetValue("tw_enable_adb_backup", gui_adb_backup);
-	if (gui_adb_backup == true)
-		adbbackup = true;
-
-	part_settings.adbbackup = adbbackup;
-	time(&total_start);
-
-	Update_System_Details_OTA_Survival();
+	Update_System_Details();
 
 	if (!Mount_Current_Storage(true))
 		return false;
-
-	
-	if (skip_digest == 0)
-		part_settings.generate_digest = true;
-	else
-		part_settings.generate_digest = false;
-
+		
 	DataManager::GetValue(RW_SURVIVAL_FOLDER_VAR, part_settings.Backup_Folder);
 	DataManager::GetValue(RW_SURVIVAL_BACKUP_NAME, Backup_Name);
 	
 	part_settings.Backup_Folder = part_settings.Backup_Folder + "/" + Backup_Name;
-	TWPartition* sys_image = PartitionManager.Find_Partition_By_Path("/system_image");
-	if (DataManager::GetIntValue(RW_DO_SYSTEM_ON_OTA) != 0 && sys_image != NULL)
+	TWPartition* survival_sys = PartitionManager.Find_Partition_By_Path("/system_image");
+    if (survival_sys != NULL && survival_sys->Current_File_System == "emmc" && survival_sys->Can_Be_Backed_Up) {
+    #ifdef TW_HAS_NO_BOOT_PARTITION
+     Backup_List += "/system_image;";
+   #else
+	if (DataManager::GetIntValue(RW_DO_SYSTEM_ON_OTA) != 0)
    Backup_List += "/system_image;/boot;";
-   else if (DataManager::GetIntValue(RW_DO_SYSTEM_ON_OTA) != 0)
-   Backup_List += "/system;/boot;";
-   else 
+   else
    Backup_List += "/boot;";
+   #endif
+   } else {
+   LOGERR("OTA_Survival: Please set \"/system_image\" in to fstab and be sure that it can be backed up!");
+    return false;
+   }
 	
 	if (!Backup_List.empty()) {
 		end_pos = Backup_List.find(";", start_pos);
@@ -3268,11 +3063,7 @@ int TWPartitionManager::Run_OTA_Survival_Backup(bool adbbackup) {
 		gui_msg("no_partition_selected=No partitions selected for backup.");
 		return false;
 	}
-	if (adbbackup) {
-		if (twadbbu::Write_ADB_Stream_Header(partition_count) == false) {
-			return false;
-		}
-	}
+	
 	total_bytes = part_settings.file_bytes + part_settings.img_bytes;
 	ProgressTracking progress(total_bytes);
 	part_settings.progress = &progress;
@@ -3285,23 +3076,16 @@ int TWPartitionManager::Run_OTA_Survival_Backup(bool adbbackup) {
 		return false;
 	}
 
-	if (adbbackup)
-		disable_free_space_check = true;
-
-    if (DataManager::GetIntValue(RW_DO_SYSTEM_ON_OTA) != 0) {
-	if (!disable_free_space_check) {
+	if (DataManager::GetIntValue(RW_DO_SYSTEM_ON_OTA) != 0) {
 		if (free_space - (1500 * 1024 * 1024) < total_bytes) {
 			gui_err("wolf_no_space_ota_survival=Not enough free space on internal storage for creating the OTA survival.");
 			return false;
-		}
 	}
 	} else {
-		if (!disable_free_space_check) {
 		if (free_space - (100 * 1024 * 1024) < total_bytes) {
 			gui_err("wolf_no_space_ota_survival=Not enough free space on internal storage for creating the OTA survival.");
 			return false;
 		}
-	}
   }
 	part_settings.img_bytes_remaining = part_settings.img_bytes;
 	part_settings.file_bytes_remaining = part_settings.file_bytes;
@@ -3343,13 +3127,10 @@ int TWPartitionManager::Run_OTA_Survival_Backup(bool adbbackup) {
 	time(&total_stop);
 	int total_time = (int) difftime(total_stop, total_start);
 
-	uint64_t actual_backup_size;
-	if (!adbbackup) {
+	    uint64_t actual_backup_size;
 		TWExclude twe;
 		actual_backup_size = twe.Get_Folder_Size(part_settings.Backup_Folder);
-	} else
-		actual_backup_size = part_settings.file_bytes + part_settings.img_bytes;
-	actual_backup_size /= (1024LLU * 1024LLU);
+	    actual_backup_size /= (1024LLU * 1024LLU);
 
 	int prev_img_bps = 0, use_compression = 0;
 	unsigned long long prev_file_bps = 0;
@@ -3371,86 +3152,13 @@ int TWPartitionManager::Run_OTA_Survival_Backup(bool adbbackup) {
 	else
 		DataManager::SetValue(TW_BACKUP_AVG_FILE_RATE, file_bps);
 
-	Update_System_Details_OTA_Survival();
+	Update_System_Details();
 	UnMount_Main_Partitions();
-	if (part_settings.adbbackup) {
-		if (twadbbu::Write_ADB_Stream_Trailer() == false) {
-			return false;
-		}
-	}
-	part_settings.adbbackup = false;
-	DataManager::SetValue("tw_enable_adb_backup", 0);
-
 	return true;
-}			
+}	
+			
 
-bool TWPartitionManager::Flash_Repacked_Image(string& path, string& filename, bool recovery) {
-	int partition_count = 0;
-	TWPartition* flash_part = NULL;
-	string Flash_List;
-	if (!recovery)
-	Flash_List = "/recovery;";
-	else
-	Flash_List = "/boot;";
-	string flash_path, full_filename;
-	size_t start_pos = 0, end_pos = 0;
-
-	full_filename = path + "/" + filename;
-
-	if (!TWFunc::Path_Exists(full_filename)) {
-		if (!Mount_By_Path(full_filename, true)) {
-			return false;
-		}
-		if (!TWFunc::Path_Exists(full_filename)) {
-			return false;
-		}
-	}
-
-	PartitionSettings part_settings;
-	part_settings.Backup_Folder = path;
-	unsigned long long total_bytes = TWFunc::Get_File_Size(full_filename);
-	ProgressTracking progress(total_bytes);
-	part_settings.progress = &progress;
-	part_settings.adbbackup = false;
-	part_settings.PM_Method = PM_RESTORE;
-
-	if (!Flash_List.empty()) {
-		end_pos = Flash_List.find(";", start_pos);
-		while (end_pos != string::npos && start_pos < Flash_List.size()) {
-			flash_path = Flash_List.substr(start_pos, end_pos - start_pos);
-			flash_part = Find_Partition_By_Path(flash_path);
-			if (flash_part != NULL) {
-				partition_count++;
-				if (partition_count > 1) {
-					gui_err("too_many_flash=Too many partitions selected for flashing.");
-					return false;
-				}
-			} else {
-				gui_msg(Msg(msg::kError, "flash_unable_locate=Unable to locate '{1}' partition for flashing.")(flash_path));
-				return false;
-			}
-			start_pos = end_pos + 1;
-			end_pos = Flash_List.find(";", start_pos);
-		}
-	}
-
-	if (partition_count == 0) {
-		gui_err("no_part_flash=No partitions selected for flashing.");
-		return false;
-	}
-
-	if (flash_part) {
-		flash_part->Backup_FileName = filename;
-		if (!flash_part->Flash_Image(&part_settings))
-			return false;
-	} else {
-		gui_err("invalid_flash=Invalid flash partition specified.");
-		return false;
-	}
-	return true;
-}
-	
-int TWPartitionManager::Run_OTA_Survival_Restore(const string& Restore_Name) {
+int TWPartitionManager::Run_Custom_Restore(const string& Restore_Name) {
 	PartitionSettings part_settings;
 	int check_digest = 0;
 
@@ -3473,7 +3181,13 @@ int TWPartitionManager::Run_OTA_Survival_Restore(const string& Restore_Name) {
     DataManager::SetValue("tw_storage_path", "/");
     
     DataManager::GetValue("tw_restore_list", Restore_List);
-	
+
+    TWPartition* survival_sys = PartitionManager.Find_Partition_By_Path("/system_image");
+    if (survival_sys == NULL || survival_sys->Current_File_System != "emmc" || !survival_sys->Can_Be_Backed_Up) {
+	LOGERR("OTA_Survival: Please set \"/system_image\" in to fstab and be sure that it can be backed up!");
+    return false;
+   }
+
 	if (!Mount_Current_Storage(true))
 		return false;
 
@@ -3541,134 +3255,13 @@ int TWPartitionManager::Run_OTA_Survival_Restore(const string& Restore_Name) {
 		}
 	}
 	UnMount_By_Path("/system", false);
-	Update_System_Details_OTA_Survival();
+	Update_System_Details();
 	UnMount_Main_Partitions();
 	time(&rStop);
 	DataManager::SetValue("tw_file_progress", "");
 
 	return true;
 }
-
-
-void TWPartitionManager::Update_System_Details_OTA_Survival(void) {
-	std::vector<TWPartition*>::iterator iter;
-	int data_size = 0;
-
-	for (iter = Partitions.begin(); iter != Partitions.end(); iter++) {
-		(*iter)->Update_Size(true);
-		if ((*iter)->Can_Be_Mounted) {
-			if ((*iter)->Mount_Point == "/system") {
-				int backup_display_size = (int)((*iter)->Backup_Size / 1048576LLU);
-				DataManager::SetValue(TW_BACKUP_SYSTEM_SIZE, backup_display_size);
-			} else if ((*iter)->Mount_Point == "/data" || (*iter)->Mount_Point == "/datadata") {
-				data_size += (int)((*iter)->Backup_Size / 1048576LLU);
-			} else if ((*iter)->Mount_Point == "/cache") {
-				int backup_display_size = (int)((*iter)->Backup_Size / 1048576LLU);
-				DataManager::SetValue(TW_BACKUP_CACHE_SIZE, backup_display_size);
-			} else if ((*iter)->Mount_Point == "/sd-ext") {
-				int backup_display_size = (int)((*iter)->Backup_Size / 1048576LLU);
-				DataManager::SetValue(TW_BACKUP_SDEXT_SIZE, backup_display_size);
-				if ((*iter)->Backup_Size == 0) {
-					DataManager::SetValue(TW_HAS_SDEXT_PARTITION, 0);
-					DataManager::SetValue(TW_BACKUP_SDEXT_VAR, 0);
-				} else
-					DataManager::SetValue(TW_HAS_SDEXT_PARTITION, 1);
-			} else if ((*iter)->Has_Android_Secure) {
-				int backup_display_size = (int)((*iter)->Backup_Size / 1048576LLU);
-				DataManager::SetValue(TW_BACKUP_ANDSEC_SIZE, backup_display_size);
-				if ((*iter)->Backup_Size == 0) {
-					DataManager::SetValue(TW_HAS_ANDROID_SECURE, 0);
-					DataManager::SetValue(TW_BACKUP_ANDSEC_VAR, 0);
-				} else
-					DataManager::SetValue(TW_HAS_ANDROID_SECURE, 1);
-			} else if ((*iter)->Mount_Point == "/boot") {
-				int backup_display_size = (int)((*iter)->Backup_Size / 1048576LLU);
-				DataManager::SetValue(TW_BACKUP_BOOT_SIZE, backup_display_size);
-				if ((*iter)->Backup_Size == 0) {
-					DataManager::SetValue("tw_has_boot_partition", 0);
-					DataManager::SetValue(TW_BACKUP_BOOT_VAR, 0);
-				} else
-					DataManager::SetValue("tw_has_boot_partition", 1);
-			}
-		} else {
-			// Handle unmountable partitions in case we reset defaults
-			if ((*iter)->Mount_Point == "/boot") {
-				int backup_display_size = (int)((*iter)->Backup_Size / 1048576LLU);
-				DataManager::SetValue(TW_BACKUP_BOOT_SIZE, backup_display_size);
-				if ((*iter)->Backup_Size == 0) {
-					DataManager::SetValue(TW_HAS_BOOT_PARTITION, 0);
-					DataManager::SetValue(TW_BACKUP_BOOT_VAR, 0);
-				} else
-					DataManager::SetValue(TW_HAS_BOOT_PARTITION, 1);
-			} else if ((*iter)->Mount_Point == "/recovery") {
-				int backup_display_size = (int)((*iter)->Backup_Size / 1048576LLU);
-				DataManager::SetValue(TW_BACKUP_RECOVERY_SIZE, backup_display_size);
-				if ((*iter)->Backup_Size == 0) {
-					DataManager::SetValue(TW_HAS_RECOVERY_PARTITION, 0);
-					DataManager::SetValue(TW_BACKUP_RECOVERY_VAR, 0);
-				} else
-					DataManager::SetValue(TW_HAS_RECOVERY_PARTITION, 1);
-			} else if ((*iter)->Mount_Point == "/data") {
-				data_size += (int)((*iter)->Backup_Size / 1048576LLU);
-			}
-		}
-	}
-	DataManager::SetValue(TW_BACKUP_DATA_SIZE, data_size);
-	string current_storage_path = DataManager::GetCurrentStoragePath();
-	TWPartition* FreeStorage = Find_Partition_By_Path(current_storage_path);
-	if (FreeStorage != NULL) {
-		// Attempt to mount storage
-		if (!FreeStorage->Mount(false)) {
-			gui_msg(Msg(msg::kError, "unable_to_mount_storage=Unable to mount storage"));
-			DataManager::SetValue(TW_STORAGE_FREE_SIZE, 0);
-		} else {
-			DataManager::SetValue(TW_STORAGE_FREE_SIZE, (int)(FreeStorage->Free / 1048576LLU));
-		}
-	} else {
-		LOGINFO("Unable to find storage partition '%s'.\n", current_storage_path.c_str());
-	}
-	if (!Write_Fstab())
-		LOGERR("Error creating fstab\n");
-	return;
-}
-
-
-
-
-void TWPartitionManager::Notify_On_Finished_Backup(void) {
-if (DataManager::GetIntValue("rw_inject_after_backup") != 0) {
-        	string ledcolor, install_vibrate_value;
-	        DataManager::GetValue("wolf_data_backup_vibrate", install_vibrate_value);
-            DataManager::GetValue("wolf_backup_led_color", ledcolor);
-            string leds = "/sys/class/leds/";
-	        string flashbs = leds + ledcolor + "/brightness";
-            string flashtime = leds + ledcolor + "/led_time";
-            string flashblink = leds + ledcolor + "/blink";    
-            string vibrate_path = "/sys/class/timed_output/vibrator/enable"; 
-            TWFunc::write_to_file(flashbs, "255");
-		    TWFunc::write_to_file(flashtime, "1 1 1 1");
-		    TWFunc::write_to_file(flashblink, "1");
-		    TWFunc::write_to_file(vibrate_path, install_vibrate_value);
-         }
-      }
-
-void TWPartitionManager::Notify_On_Finished_Restore(void) {
-            if (DataManager::GetIntValue("rw_inject_after_restore") != 0) {
-        	string ledcolor, install_vibrate_value;
-	        DataManager::GetValue("wolf_data_restore_vibrate", install_vibrate_value);
-            DataManager::GetValue("wolf_restore_led_color", ledcolor);
-	        string leds = "/sys/class/leds/";
-	        string flashbs = leds + ledcolor + "/brightness";
-            string flashtime = leds + ledcolor + "/led_time";
-            string flashblink = leds + ledcolor + "/blink";    
-            string vibrate_path = "/sys/class/timed_output/vibrator/enable"; 
-            TWFunc::write_to_file(flashbs, "255");
-		    TWFunc::write_to_file(flashtime, "1 1 1 1");
-		    TWFunc::write_to_file(flashblink, "1");
-		    TWFunc::write_to_file(vibrate_path, install_vibrate_value);
- 		   }
-         }
-
-
+	
 
 

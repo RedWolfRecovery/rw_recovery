@@ -54,11 +54,7 @@ on boot
     domainname localdomain
 
     class_start default
-    copy /init.recovery.usb.rc /etc/init.recovery.usb.rc.bak
-    copy /default.prop /etc/default.prop.bak
-    copy /init.recovery.usb.rc /license/init.redwolf.usb.rc
-    setprop ro.miui.has_cust_partition true
-    
+       
 # Load properties, pre-Android 6.0
 on load_all_props_action
     load_all_props
@@ -110,10 +106,14 @@ service adbd /sbin/adbd --root_seclabel=u:r:su:s0 --device_banner=recovery
     socket adbd stream 660 system system
     seclabel u:r:adbd:s0
     
-on property:redwolf.adb.status=1
+# Always start adbd on userdebug and eng builds
+on property:ro.debuggable=1
+    #write /sys/class/android_usb/android0/enable 1
+    #start adbd
+    setprop service.adb.root 1
+
+# Restart adbd so it can run as root
+on property:service.adb.root=1
     write /sys/class/android_usb/android0/enable 0
     restart adbd
     write /sys/class/android_usb/android0/enable 1
-
-on property:redwolf.adb.status=0
-    write /sys/class/android_usb/android0/enable 0

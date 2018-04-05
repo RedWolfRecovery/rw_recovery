@@ -40,7 +40,7 @@ public:
 	// call this when power button is pressed
 	void toggleBlank(void);
 
-	bool isScreenOff();
+	bool isScreenOff();	
 
 private:
 	void setTimer(void);

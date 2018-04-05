@@ -26,6 +26,9 @@
 #include <openssl/sha.h>
 
 #define ASSUMED_UPDATE_BINARY_NAME  "META-INF/com/google/android/update-binary"
+#define METADATA "META-INF/com/android/metadata"
+#define AROMA_CONFIG "META-INF/com/google/android/aroma-config"
+#define UPDATER_SCRIPT  "META-INF/com/google/android/updater-script"
 
 enum { INSTALL_SUCCESS, INSTALL_ERROR, INSTALL_CORRUPT, INSTALL_RETRY };
 
