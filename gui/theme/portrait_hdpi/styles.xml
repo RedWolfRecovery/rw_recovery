@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <recovery>
 	<styles>
 		<style name="text_ab_title">
@@ -48,6 +47,14 @@
 
 		<style name="text_body2_hl">
 			<font resource="body1" color="%accent%"/>
+		</style>
+		
+		<style name="text_body2_green">
+			<font resource="body1" color="%process%"/>
+		</style>
+		
+		<style name="text_body2_light_green">
+			<font resource="body1" color="#20B2AA"/>
 		</style>
 
 		<style name="text_body2_fail">
