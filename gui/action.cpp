@@ -955,9 +955,9 @@ int GUIAction::screenshotinternal(std::string arg __unused)
 
 	const std::string storage = "/sdcard";
 	if (PartitionManager.Is_Mounted_By_Path(storage)) {
-		snprintf(path, sizeof(path), "%s/WOLF.res/Wolf.images/", storage.c_str());
+		snprintf(path, sizeof(path), "%s/WOLF.res/WOLF.images/", storage.c_str());
 	} else {
-		strcpy(path, "/sdcard/WOLF.res/Wolf.images/");
+		strcpy(path, "/sdcard/WOLF.res/WOLF.images/");
 	}
 
 	if (!TWFunc::Create_Dir_Recursive(path, 0775, uid, gid))
@@ -997,9 +997,9 @@ int GUIAction::screenshotexternal(std::string arg __unused)
 
 	const std::string storage = "/sdcard1";
 	if (PartitionManager.Is_Mounted_By_Path(storage)) {
-		snprintf(path, sizeof(path), "%s/WOLF.res/Wolf.images/", storage.c_str());
+		snprintf(path, sizeof(path), "%s/WOLF.res/WOLF.images/", storage.c_str());
 	} else {
-		strcpy(path, "/sdcard/WOLF.res/Wolf.images/");
+		strcpy(path, "/sdcard/WOLF.res/WOLF.images/");
 	}
 
 	if (!TWFunc::Create_Dir_Recursive(path, 0775, uid, gid))
