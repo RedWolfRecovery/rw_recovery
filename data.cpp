@@ -523,7 +523,7 @@ void DataManager::SetBackupFolder()
 {
 	string str = GetCurrentStoragePath();
 	TWPartition* partition = PartitionManager.Find_Partition_By_Path(str);
-	str += "/WOLF/.ZALOHY/";
+	str += "/WOLF/.BACKUPS/";
 	string dev_id;
 	GetValue("device_id", dev_id);
 
@@ -600,7 +600,7 @@ void DataManager::SetDefaultValues()
 
 	str = GetCurrentStoragePath();
 	mPersist.SetValue(TW_ZIP_LOCATION_VAR, str);
-	str += "/WOLF/.ZALOHY/";
+	str += "/WOLF/.BACKUPS/";
 
 	string dev_id;
 	mConst.GetValue("device_id", dev_id);
@@ -1132,6 +1132,3 @@ void DataManager::Leds(bool enable)
 } 
    }
 }
-
-
-	
