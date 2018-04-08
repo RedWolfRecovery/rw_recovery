@@ -617,6 +617,7 @@ int TWinstall_zip(const char* path, int* wipe_cache) {
         gui_msg(Msg(msg::kProcess, "wolf_run_process=Starting '{1}' process")("OTA_BAK"));
         DataManager::SetValue(RW_RUN_SURVIVAL_BACKUP, 1);
 		if (PartitionManager.Run_Custom_Backup()) {
+		set_miui_install_status(OTA_SUCCESS, false);
 		gui_msg(Msg(msg::kProcess, "wolf_run_process_done=Finished '{1}' process")("OTA_BAK"));
 		DataManager::SetValue(RW_RUN_SURVIVAL_BACKUP, 0);
              } else {
