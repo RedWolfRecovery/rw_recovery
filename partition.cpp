@@ -422,7 +422,6 @@ bool TWPartition::Process_Fstab_Line(const char *fstab_line, bool Display_Error,
 		Wipe_Available_in_GUI = true;
 		Is_Storage = true;
 		Removable = true;
-		Wipe_Available_in_GUI = true;
 	} else if (!Is_File_System(Fstab_File_System) && !Is_Image(Fstab_File_System)) {
 		if (Display_Error)
 			LOGERR("Unknown File System: '%s'\n", Fstab_File_System.c_str());

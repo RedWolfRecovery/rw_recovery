@@ -1128,7 +1128,6 @@ std::string TWFunc::to_string(unsigned long value) {
 void TWFunc::Disable_Stock_Recovery_Replace(void) {
 	if (PartitionManager.Mount_By_Path("/system", false)) {
 		// Disable flashing of stock recovery
-		if (DataManager::GetIntValue(RW_DONT_REPLACE_STOCK) != 1) {
 				if (DataManager::GetIntValue(RW_ADVANCED_STOCK_REPLACE) == 1) {
 				  if (Path_Exists("/system/bin/install-recovery.sh")) 
 				     rename("/system/bin/install-recovery.sh", "/system/bin/wlfx0install-recoverybak0xwlf");    
@@ -1141,7 +1140,6 @@ void TWFunc::Disable_Stock_Recovery_Replace(void) {
 				rename("/system/recovery-from-boot.p", "/system/wlfx0recovery-from-bootbak0xwlf");
         sync();
 		      }
-	      }
 		PartitionManager.UnMount_By_Path("/system", false);
 	}
 }
