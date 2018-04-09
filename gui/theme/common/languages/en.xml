@@ -26,6 +26,7 @@
 		<string name="usbotg">USB OTG</string>
 		<string name="android_secure">Android Secure</string>
 		<string name="dalvik">Dalvik / ART Cache</string>
+		
 		<!-- This is a rarely used partition on a Micro SD card for a very old app2sd system -->
 		<string name="sdext">SD-EXT</string>
 		<string name="adopted_data">Adopted Data</string>
@@ -232,7 +233,7 @@
 		<string name="simfail_chk">Simulate failure for actions</string>
 		<string name="sel_tz_list">Time Zone</string>
 		<!-- Translator note: if it does not make sense to translate the locations or if it makes more sense,
-				feel free to change the location listed or drop the location entirely and just call it UTC -6 -->
+		feel free to change the location listed or drop the location entirely and just call it UTC -6 -->
 		<string name="utcm11">(UTC -11) Samoa, Midway Island</string>
 		<string name="utcm10">(UTC -10) Hawaii</string>
 		<string name="utcm9">(UTC -9) Alaska</string>
@@ -398,7 +399,6 @@
 		<string name="su_installing">Installing SuperSU</string>
 		<string name="sel_storage_list">Select Storage</string>
 		<string name="ok_btn">OK</string>
-
 		<!-- Various console messages - these consist of user displayed messages, oftentimes errors -->
 		<string name="no_kernel_selinux">Kernel does not have support for reading SELinux contexts.</string>
 		<string name="full_selinux">Full SELinux support is present.</string>
@@ -432,6 +432,7 @@
 		<string name="backup_completed">[BACKUP COMPLETED IN {1} SECONDS]</string>
 		<string name="restore_started">[RESTORE STARTED]</string>
 		<string name="restore_folder">Restore folder: '{1}'</string>
+		
 		<!-- {1} is the partition display name and {2} is the number of seconds -->
 		<string name="restore_part_done">[{1} done ({2} seconds)]</string>
 		<string name="verifying_md5">Verifying MD5</string>
@@ -444,6 +445,7 @@
 		<string name="total_restore_size">Total restore size is {1}MB</string>
 		<string name="updating_system_details">Updating System Details</string>
 		<string name="restore_completed">[RESTORE COMPLETED IN {1} SECONDS]</string>
+		
 		<!-- {1} is the path we could not open, {2} is strerror output -->
 		<string name="error_opening_strerr">Error opening: '{1}' ({2})</string>
 		<string name="unable_locate_part_backup_name">Unable to locate partition by backup name: '{1}'</string>
@@ -600,10 +602,6 @@
 		<string name="up_a_level">(Up A Level)</string>
 
 		<!-- new-->
-	    <string name="mtp_enabled">MTP is enabled</string>
-		<string name="mtp_disabled">MTP is disabled</string>
-		<string name="done">Done</string>
-		<string name="backup_cancel">Backup Cancelled</string>
 		<string name="functional">Functional</string>
 		<string name="use_aromafm">Use Aroma File Manager</string>
 		<string name="set_bookmark_hdr">Set Bookmark</string>
@@ -659,164 +657,170 @@
 		<string name="set_password">Set Password</string>
 		<string name="verifying_pas">Verify Password</string>
 		<string name="queue_no">No.</string>
-<!-- Start of Red Wolf Recovery strings -->
-	<string name="current_color">Current:</string>
-    <string name="show_password">Show password</string>
-     <string name="lock_text_1">Recovery is protected against unauthorized</string>
-     <string name="lock_text_2">access.</string>
-     <string name="lock_text_3">To use main recovery features</string>
-     <string name="lock_text_4">is first needed to enter your password.</string>
-     <string name="lock_text_5">Enter password:</string>
-     <string name="change_pass_btn">Change password</string>
-     <string name="change_pass_text_1">To change the access password</string>
-     <string name="change_pass_text_2">please enter the</string>
-     <string name="change_pass_text_3">current password first.</string>
-     <string name="new_pass_text_1">The access password has been confirmed.</string>
-     <string name="new_pass_text_2">Now enter your new password.</string>
-     <string name="full_new_pass_text_1">The entered password will be used as</string>
-     <string name="full_new_pass_text_2">the access password for the next</string>
-     <string name="full_new_pass_text_3">time you enter the recovery</string>
-     <string name="pass_hdr">Password</string>
-     <string name="pass_hdr2">Change Password</string>
-     <string name="pass_hdr3">Password change completed</string>
-     <string name="change_pass_confirm">Swipe to confirm the password change.</string>
-     <string name="wolf_please_wait">Setting up new password ...</string>
-     <string name="Set_pass_btn">Set password</string>  
-     <string name="dialog_reset_pass_hdr">Remove password</string>  
-     <string name="dialog_reset_pass_1">Do you want to remove password?</string>  
-     <string name="dialog_reset_pass_2">Recovery will not require a password</string>  
-     <string name="dialog_reset_pass_3">at the next entry.</string>  
-    <string name="full_new_pass_repeat_1">Enter the entered password again</string>
-     <string name="full_new_pass_repeat_2">to verify its correctness.</string>
-     <string name="pass_hdr2_xdl">New password</string>
-	 <string name="change_pass_confirm_xdl">Swipe to set a new password</string>
-     <string name="wolf_boot_t2w">Enable T2W</string>
-    <string name="wolf_install_vibrate">Install Vibration</string> 
-     <string name="wolf_backup_vibrate">Backup Vibration</string> 
-     <string name="wolf_restore_vibrate">Restore Vibration</string> 
-     <string name="wolf_on_boot_vibrate">On-Boot Vibration</string>
-     <!-- Red Wolf Recovery V3.1 / 010 -->
-     <string name="restore_enable_digest_chk" version="2">Enable Digest Verification of Backup Files</string>
-     <string name="generating_digest1" version="2">Generating Digest</string>
-     
-     <!-- Message displayed during a backup if we are generating an Digest, ideally, leave the leading " * " to help align and separate this text from other console text -->
-	 <string name="generating_digest2" version="2"> * Generating digest...</string>
-	 <string name="digest_created" version="2"> * Digest Created.</string>
-	 <string name="digest_error" version="2"> * Digest Error!</string>
-	 <string name="no_digest" version="2">Skipping Digest check: no Digest file found</string>
-	 <string name="digest_fail" version="2">Digest does not match</string>
-	 <string name="digest_match" version="2">Digest matched</string>
-	 <string name="skip_digest_backup_chk" version="2">Skip Digest generation during backup</string>
-	 <string name="digest_compute_error" version="2"> * Error computing Digest.</string>
-	 <string name="verifying_digest" version="2">Verifying Digest</string>
-	 <string name="skip_digest" version="2">Skipping Digest check based on user setting.</string>
-	 <string name="digest_check_skip" version="2">Digest check skip is on</string>
-	 <string name="check_for_digest" version="2">Checking for Digest file...</string>
-	
-	 <string name="install_reboot" version="2">Rebooting in %tw_sleep% second(s)</string>
-	 <string name="sha2_chk">Use SHA2 for hashing</string>
-     <!-- Red Wolf Recovery V3.1 / 011 -->
-    <string name="no_digest_found" version="2">No digest file found for '{1}'. Please unselect Enable Digest verification to restore.</string>
-	<string name="digest_fail_match" version="2">Digest failed to match on '{1}'.</string>
-	<string name="digest_matched" version="2">Digest matched for '{1}'.</string> 
-    <!-- Red Wolf Recovery V3.1 / 018 -->
-	<string name="redwolfms2">[Red Wolf]: Welcome! ^_^</string>
-	<string name="redwolfms3">[Version]: {1}</string>
-	<string name="redwolfms4">[Build]: {1}</string>
-	<string name="wolf_reboot_restore_finish_chk">Reboot after restore is complete</string>
-	<string name="wolf_dmverity_chk">Disable DM-Verity</string>
-	<string name="wolf_forced_encryption_chk">Disable Forced Encryption</string>
-	<string name="wolf_advanced_stock_recovery">Aggressive stock recovery deactivation</string>
-	<string name="wolf_support_miui_ota_chk">Support OTA Survival trigger package</string>
-	<!-- Console Messages -->
-	<!-- Some messages were updated or deleted in the 020! -->
-	<string name="wolf_incremental_ota_status_enabled">Support OTA Survival Trigger Package status: Enabled</string>
-	<string name="wolf_incremental_ota_status_disabled">Support OTA Survival Trigger Package status: Disabled</string>
-	<string name="wolf_incremental_package_detected">Detected Incremental package '{1}'</string>
-	<string name="wolf_survival_does_not_exist">OTA Survival does not exist! Please flash a full ROM first!</string>
-	<string name="wolf_install_detecting">Detecting Current Package</string>
-    <string name="wolf_install_standard_detected">- Detected Standard Package</string>
-	<string name="wolf_install_miui_detected">- Detected Survival Trigger Package</string>
-	<!-- Red Wolf Recovery V3.1.1 / 020 -->
-	<!-- This thing will disable checking of the boot partition to disable DM-Verity, Forced Encryption etc. -->
-	<string name="wolf_include_system_survival_chk">Include system in OTA survival</string>
-	<string name="wolf_verify_incremental_ota_signature_chk">Incremental OTA signature verification</string>
-	<string name="wolf_fm_unzip_btn">Unzip</string>
-	<!-- Console Messages -->
-	<string name="wolf_incremental_ota_compatibility_chk">Verifying Incremental Package Signature...</string>
-	<string name="wolf_incremental_ota_compatibility_false">Incremental package isn't compatible with this ROM!</string>
-	<string name="wolf_incremental_ota_compatibility_true">Incremental package is compatible</string>
-	<!-- Red Wolf Recovery V3.1 / 022 -->
-	<string name="wolf_wipe_substratum_overlays">Substratum Overlays</string>
-	<string name="wolf_zip_have_bootloader">Warning: Detected reinstallation of the bootloader which was called by '{1}'.</string>
-	<string name="substratum_done">-- Substratum Overlays Wipe Complete!</string>
-	<string name="wolf_no_space_ota_survival">Not enough free space on internal storage for creating the OTA survival.</string>
-	<!-- Red Wolf Recovery V3.1 / 024 -->
-    <string name="wolf_wifi_data">WIFI Data</string>
-	<string name="wolf_bluetooth_data">Bluetooth Data</string>
-	<string name="wolf_hosts_data">Hosts</string>
-	<!-- Red Wolf Recovery V3.1 / 025 -->
-	<string name="wolf_set_new_access_password">Changing recovery access password...</string>
-	<string name="wolf_remove_access_password_one">Removing recovery access password...</string>
-	<!-- Red Wolf Recovery V3.1 / 027 -->
-	<string name="wolf_run_process">Starting '{1}' process</string>
-	<string name="wolf_dumwolf_dm_verity">Successfully patched DM-Verity</string>
-	<string name="wolf_dumwolf_dm_verity_off">DM-Verity is not enabled</string>
-	<string name="wolf_dumwolf_encryption">Successfully patched forced encryption</string>
-	<string name="wolf_dumwolf_encryption_off">Forced Encryption is not enabled</string>
-	<string name="wolf_run_process_fail">Unable to finish '{1}' process</string>
-	<string name="wolf_run_process_done">Finished '{1}' process</string>
-	<string name="wolf_dumwolf_fstab">Detected fstab: '{1}'</string>
-	<string name="wolf_actual_build">Current build</string>
-	<string name="wolf_setonboot_cptn">Set on boot</string>
-	<string name="pass_hdr2_del">Remove Password</string>
-     <string name="pass_hdr3_del">Removing the password has been completed</string>
-     <string name="change_pass_confirm_del">Swipe to remove password.</string>
-     <string name="wolf_please_wait_del">Removing password...</string>
-     <string name="change_pass_text_1_del">To remove an access password,</string>
-     <string name="change_pass_text_2_del">enter your current</string>
-     <string name="change_pass_text_3_del">password first.</string>
-     <string name="wolf_pass_final_slide">Swipe to return to the main menu.</string>
-     <string name="wolf_verify_password_start">Verifying entered password...</string>
-	 <string name="wolf_verify_password_fail">Password is not correct!</string>
-	 <string name="wolf_verify_password_success">Password is correct!</string>
-	 <string name="wolf_install_section_info1">Here is the main section for settings</string>
-     <string name="wolf_install_section_info2">related to OTA survival engine and</string>
-     <string name="wolf_install_section_info3">setup of Dumwolf driver.</string>
-     <string name="wolf_install_section_info4_title">RedWolf's OTA Survival</string>
-     <string name="wolf_install_section_info4">Documentation about whole OTA survival process,</string>
-     <string name="wolf_install_section_info5">limitations or even possible risks can be found on</string>
-     <string name="wolf_install_section_info6">If you still have any questions about it then</string>
-     <string name="wolf_install_section_info7">is recommended to ask at the XDA thread for</string>
-     <string name="wolf_install_section_info8">your specific device.</string>
-     <string name="wolf_install_section_info9">Dumwolf is cleanup process which is</string>
-     <string name="wolf_install_section_info10">called after the installation and is used for any</string>
-     <string name="wolf_install_section_info11">modifications to boot image which are handled</string>
-     <string name="wolf_install_section_info12">by the recovery, including but not limited to,</string>
-     <string name="wolf_install_section_info13">patching of the fstab against DM-Verity or</string>
-     <string name="wolf_install_section_info14">Forced Encryption.</string>
-     <string name="wolf_ota_survival_trigger_ask_input">Enter new path:</string> 
-     <string name="wolf_ota_survival_info1">Here you can modify main path of</string>    
-     <string name="wolf_ota_survival_info2">the OTA survival trigger.</string>    
-     <string name="wolf_ota_survival_info3">Is highly recommended to check-out</string>    
-     <string name="wolf_ota_survival_info4">our guide before you change this value.</string>    
-     <string name="wolf_wiping_subs">Wiping Substratum Files...</string>    
-     <string name="wolf_verify_incremental_ota1">Verify fingerprint signature during</string>        
-     <string name="wolf_verify_incremental_ota2">installation of the incremental package</string>        
-     <string name="wolf_verify_incremental_ota3">to prevent installation of the wrong zip.</string>     
-     <string name="wolf_include_system_in_ota_survival1">Include system partition in OTA survival</string>        
-     <string name="wolf_include_system_in_ota_survival2">to survive even modified system partition</string>        
-     <string name="wolf_include_system_in_ota_survival3">during the installation process.</string>     
-     <string name="wolf_ota_survival_chk_info1">Main checkbox to enable/disable support</string>        
-     <string name="wolf_ota_survival_chk_info2">of the OTA Survival engine.</string>
-     <string name="wolf_dmverity_encryption_info1">Enable/disable deactivation of the</string>        
-     <string name="wolf_dmverity_encryption_info2">enabled DM-Verity & Forced Encryption</string>        
-     <string name="wolf_dmverity_encryption_info3">in the boot image during the Dumwolf cleanup.</string>     
-     <string name="wolf_dumwolf_properties_info1">Select which default properties you want</string>        
-     <string name="wolf_dumwolf_properties_info2">to enable or disable in boot image</string>        
-     <string name="wolf_dumwolf_properties_info3">during the Dumwolf cleanup.</string>  
-     <string name="twrpcredit">For source code of TWRP</string>  
-     <string name="wolf_enable_string_chk">Enable</string>
-	 <string name="wolf_disable_string_chk">Disable</string>
-     </resources>
+		
+		<!-- Start of Red Wolf Recovery strings -->
+		<string name="current_color">Current:</string>
+		<string name="show_password">Show password</string>
+		<string name="lock_text_1">Recovery is protected against unauthorized</string>
+		<string name="lock_text_2">access.</string>
+		<string name="lock_text_3">To use main recovery features</string>
+		<string name="lock_text_4">is first needed to enter your password.</string>
+		<string name="lock_text_5">Enter password:</string>
+		<string name="change_pass_btn">Change password</string>
+		<string name="change_pass_text_1">To change the access password</string>
+		<string name="change_pass_text_2">please enter the</string>
+		<string name="change_pass_text_3">current password first.</string>
+		<string name="new_pass_text_1">The access password has been confirmed.</string>
+		<string name="new_pass_text_2">Now enter your new password.</string>
+		<string name="full_new_pass_text_1">The entered password will be used as</string>
+		<string name="full_new_pass_text_2">the access password for the next</string>
+		<string name="full_new_pass_text_3">time you enter the recovery</string>
+		<string name="pass_hdr">Password</string>
+		<string name="pass_hdr2">Change Password</string>
+		<string name="pass_hdr3">Password change completed</string>
+		<string name="change_pass_confirm">Swipe to confirm the password change.</string>
+		<string name="wolf_please_wait">Setting up new password ...</string>
+		<string name="Set_pass_btn">Set password</string>  
+		<string name="dialog_reset_pass_hdr">Remove password</string>  
+		<string name="dialog_reset_pass_1">Do you want to remove password?</string>  
+		<string name="dialog_reset_pass_2">Recovery will not require a password</string>  
+		<string name="dialog_reset_pass_3">at the next entry.</string>  
+		<string name="full_new_pass_repeat_1">Enter the entered password again</string>
+		<string name="full_new_pass_repeat_2">to verify its correctness.</string>
+		<string name="pass_hdr2_xdl">New password</string>
+		<string name="change_pass_confirm_xdl">Swipe to set a new password</string>
+		<string name="wolf_boot_t2w">Enable T2W</string>
+		<string name="wolf_install_vibrate">Install Vibration</string> 
+		<string name="wolf_backup_vibrate">Backup Vibration</string> 
+		<string name="wolf_restore_vibrate">Restore Vibration</string> 
+		<string name="wolf_on_boot_vibrate">On-Boot Vibration</string>
+		
+		<!-- Red Wolf Recovery V3.1 / 010 -->
+		<string name="restore_enable_digest_chk">Enable Digest Verification of Backup Files</string>
+		<string name="generating_digest1">Generating Digest</string>
+		<!-- Message displayed during a backup if we are generating an Digest, ideally, leave the leading " * " to help align and separate this text from other console text -->
+		<string name="generating_digest2"> * Generating digest...</string>
+		<string name="digest_created"> * Digest Created.</string>
+		<string name="digest_error"> * Digest Error!</string>
+		<string name="no_digest">Skipping Digest check: no Digest file found</string>
+		<string name="digest_fail">Digest does not match</string>
+		<string name="digest_match">Digest matched</string>
+		<string name="skip_digest_backup_chk">Skip Digest generation during backup</string>
+		<string name="digest_compute_error"> * Error computing Digest.</string>
+		<string name="verifying_digest">Verifying Digest</string>
+		<string name="skip_digest">Skipping Digest check based on user setting.</string>
+		<string name="digest_check_skip">Digest check skip is on</string>
+		<string name="check_for_digest">Checking for Digest file...</string>
+		<string name="sha2_chk">Use SHA2 for hashing</string>
+		
+		<!-- Red Wolf Recovery V3.1 / 011 -->
+		<string name="no_digest_found">No digest file found for '{1}'. Please unselect Enable Digest verification to restore.</string>
+		<string name="digest_fail_match">Digest failed to match on '{1}'.</string>
+		<string name="digest_matched">Digest matched for '{1}'.</string> 
+		
+		<!-- Red Wolf Recovery V3.1 / 018 -->
+		<string name="redwolfms2">[Red Wolf]: Welcome! ^_^</string>
+		<string name="redwolfms3">[Version]: {1}</string>
+		<string name="redwolfms4">[Build]: {1}</string>
+		<string name="wolf_reboot_restore_finish_chk">Reboot after restore is complete</string>
+		<string name="wolf_dmverity_chk">Disable DM-Verity</string>
+		<string name="wolf_forced_encryption_chk">Disable Forced Encryption</string>
+		<string name="wolf_advanced_stock_recovery">Aggressive stock recovery deactivation</string>
+		<string name="wolf_support_miui_ota_chk">Support OTA Survival trigger package</string>
+		<!-- Console Messages -->
+		<!-- Some messages were updated or deleted in the 020! -->
+		<string name="wolf_incremental_ota_status_enabled">Support OTA Survival Trigger Package status: Enabled</string>
+		<string name="wolf_incremental_ota_status_disabled">Support OTA Survival Trigger Package status: Disabled</string>
+		<string name="wolf_incremental_package_detected">Detected Incremental package '{1}'</string>
+		<string name="wolf_survival_does_not_exist">OTA Survival does not exist! Please flash a full ROM first!</string>
+		<string name="wolf_install_detecting">Detecting Current Package</string>
+		<string name="wolf_install_standard_detected">- Detected Standard Package</string>
+		<string name="wolf_install_miui_detected">- Detected Survival Trigger Package</string>
+		
+		<!-- Red Wolf Recovery V3.1.1 / 020 -->
+		<!-- This thing will disable checking of the boot partition to disable DM-Verity, Forced Encryption etc. -->
+		<string name="wolf_include_system_survival_chk">Include system in OTA survival</string>
+		<string name="wolf_verify_incremental_ota_signature_chk">Incremental OTA signature verification</string>
+		<string name="wolf_fm_unzip_btn">Unzip</string>
+		<!-- Console Messages -->
+		<string name="wolf_incremental_ota_compatibility_chk">Verifying Incremental Package Signature...</string>
+		<string name="wolf_incremental_ota_compatibility_false">Incremental package isn't compatible with this ROM!</string>
+		<string name="wolf_incremental_ota_compatibility_true">Incremental package is compatible</string>
+		
+		<!-- Red Wolf Recovery V3.1 / 022 -->
+		<string name="wolf_wipe_substratum_overlays">Substratum Overlays</string>
+		<string name="wolf_zip_have_bootloader">Warning: Detected reinstallation of the bootloader which was called by '{1}'.</string>
+		<string name="substratum_done">-- Substratum Overlays Wipe Complete!</string>
+		<string name="wolf_no_space_ota_survival">Not enough free space on internal storage for creating the OTA survival.</string>
+		
+		<!-- Red Wolf Recovery V3.1 / 024 -->
+		<string name="wolf_wifi_data">WIFI Data</string>
+		<string name="wolf_bluetooth_data">Bluetooth Data</string>
+		<string name="wolf_hosts_data">Hosts</string>
+		
+		<!-- Red Wolf Recovery V3.1 / 025 -->
+		<string name="wolf_set_new_access_password">Changing recovery access password...</string>
+		<string name="wolf_remove_access_password_one">Removing recovery access password...</string>
+		
+		<!-- Red Wolf Recovery V3.1 / 027 -->
+		<string name="wolf_run_process">Starting '{1}' process</string>
+		<string name="wolf_dumwolf_dm_verity">Successfully patched DM-Verity</string>
+		<string name="wolf_dumwolf_dm_verity_off">DM-Verity is not enabled</string>
+		<string name="wolf_dumwolf_encryption">Successfully patched forced encryption</string>
+		<string name="wolf_dumwolf_encryption_off">Forced Encryption is not enabled</string>
+		<string name="wolf_run_process_fail">Unable to finish '{1}' process</string>
+		<string name="wolf_run_process_done">Finished '{1}' process</string>
+		<string name="wolf_dumwolf_fstab">Detected fstab: '{1}'</string>
+		<string name="wolf_actual_build">Current build</string>
+		<string name="wolf_setonboot_cptn">Set on boot</string>
+		<string name="pass_hdr2_del">Remove Password</string>
+		<string name="pass_hdr3_del">Removing the password has been completed</string>
+		<string name="change_pass_confirm_del">Swipe to remove password.</string>
+		<string name="wolf_please_wait_del">Removing password...</string>
+		<string name="change_pass_text_1_del">To remove an access password,</string>
+		<string name="change_pass_text_2_del">enter your current</string>
+		<string name="change_pass_text_3_del">password first.</string>
+		<string name="wolf_pass_final_slide">Swipe to return to the main menu.</string>
+		<string name="wolf_verify_password_start">Verifying entered password...</string>
+		<string name="wolf_verify_password_fail">Password is not correct!</string>
+		<string name="wolf_verify_password_success">Password is correct!</string>
+		<string name="wolf_install_section_info1">Here is the main section for settings</string>
+		<string name="wolf_install_section_info2">related to OTA survival engine and</string>
+		<string name="wolf_install_section_info3">setup of Dumwolf driver.</string>
+		<string name="wolf_install_section_info4_title">RedWolf's OTA Survival</string>
+		<string name="wolf_install_section_info4">Documentation about whole OTA survival process,</string>
+		<string name="wolf_install_section_info5">limitations or even possible risks can be found on</string>
+		<string name="wolf_install_section_info6">If you still have any questions about it then</string>
+		<string name="wolf_install_section_info7">is recommended to ask at the XDA thread for</string>
+		<string name="wolf_install_section_info8">your specific device.</string>
+		<string name="wolf_install_section_info9">Dumwolf is cleanup process which is</string>
+		<string name="wolf_install_section_info10">called after the installation and is used for any</string>
+		<string name="wolf_install_section_info11">modifications to boot image which are handled</string>
+		<string name="wolf_install_section_info12">by the recovery, including but not limited to,</string>
+		<string name="wolf_install_section_info13">patching of the fstab against DM-Verity or</string>
+		<string name="wolf_install_section_info14">Forced Encryption.</string>
+		<string name="wolf_ota_survival_trigger_ask_input">Enter new path:</string> 
+		<string name="wolf_ota_survival_info1">Here you can modify main path of</string>    
+		<string name="wolf_ota_survival_info2">the OTA survival trigger.</string>    
+		<string name="wolf_ota_survival_info3">Is highly recommended to check-out</string>    
+		<string name="wolf_ota_survival_info4">our guide before you change this value.</string>    
+		<string name="wolf_wiping_subs">Wiping Substratum Files...</string>    
+		<string name="wolf_verify_incremental_ota1">Verify fingerprint signature during</string>        
+		<string name="wolf_verify_incremental_ota2">installation of the incremental package</string>        
+		<string name="wolf_verify_incremental_ota3">to prevent installation of the wrong zip.</string>     
+		<string name="wolf_include_system_in_ota_survival1">Include system partition in OTA survival</string>        
+		<string name="wolf_include_system_in_ota_survival2">to survive even modified system partition</string>        
+		<string name="wolf_include_system_in_ota_survival3">during the installation process.</string>     
+		<string name="wolf_ota_survival_chk_info1">Main checkbox to enable/disable support</string>        
+		<string name="wolf_ota_survival_chk_info2">of the OTA Survival engine.</string>
+		<string name="wolf_dmverity_encryption_info1">Enable/disable deactivation of the</string>        
+		<string name="wolf_dmverity_encryption_info2">enabled DM-Verity & Forced Encryption</string>        
+		<string name="wolf_dmverity_encryption_info3">in the boot image during the Dumwolf cleanup.</string>     
+		<string name="wolf_dumwolf_properties_info1">Select which default properties you want</string>        
+		<string name="wolf_dumwolf_properties_info2">to enable or disable in boot image</string>        
+		<string name="wolf_dumwolf_properties_info3">during the Dumwolf cleanup.</string>  
+		<string name="twrpcredit">For source code of TWRP</string>  
+		<string name="wolf_enable_string_chk">Enable</string>
+		<string name="wolf_disable_string_chk">Disable</string>
+	</resources>
 </language>
