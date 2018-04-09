@@ -1,3 +1,5 @@
-**Team Win Recovery Project (TWRP)**
+**Red Wolf Recovery Project (RWRP)**
+
+redwolfrecovery.github.io
 
 You can find a compiling guide [here](http://forum.xda-developers.com/showthread.php?t=1943625 "Guide").
