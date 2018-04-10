@@ -1645,6 +1645,7 @@ int TWPartitionManager::Decrypt_Device(string Password) {
 			(*iter)->Mount(true);
 		}
 	}
+	property_set("twrp.mount_to_decrypt", "1");
 
 	property_get("ro.crypto.state", crypto_state, "error");
 	if (strcmp(crypto_state, "error") == 0) {
@@ -1714,6 +1715,7 @@ int TWPartitionManager::Decrypt_Device(string Password) {
 			(*iter)->UnMount(false);
 		}
 	}
+	property_set("twrp.mount_to_decrypt", "0");
 
 	if (pwret != 0) {
 		gui_err("fail_decrypt=Failed to decrypt data.");
