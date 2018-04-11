@@ -101,7 +101,7 @@ static std::string get_survival_path()
 
 static bool storage_is_encrypted()
 {
-return (DataManager::GetIntValue(TW_IS_ENCRYPTED) || !DataManager::GetIntValue(TW_IS_DECRYPTED)) ? false : true;
+return (DataManager::GetIntValue(TW_IS_ENCRYPTED) && !DataManager::GetIntValue(TW_IS_DECRYPTED)) ? true : false;
 }	
 
 static bool ors_is_active()
