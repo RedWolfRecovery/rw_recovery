@@ -101,12 +101,12 @@ static std::string get_survival_path()
 
 static bool storage_is_encrypted()
 {
-return (DataManager::GetIntValue(TW_IS_ENCRYPTED) && !DataManager::GetIntValue(TW_IS_DECRYPTED)) ? true : false;
+return DataManager::GetIntValue(TW_IS_ENCRYPTED) != 0;
 }	
 
 static bool ors_is_active()
 {    
-return (DataManager::GetStrValue("tw_action") != "openrecoveryscript") ? false : true;
+return DataManager::GetStrValue("tw_action") == "openrecoveryscript";
 }
 
 // to support pre-KitKat update-binaries that expect properties in the legacy format
@@ -153,7 +153,7 @@ static int switch_to_new_properties()
 
 static void set_miui_install_status(std::string install_status, bool verify)
 {
-if (DataManager::GetStrValue("tw_action") == "openrecoveryscript") {
+if (ors_is_active()) {
 std::string last_status = "/cache/recovery/last_status";
 if (!PartitionManager.Mount_By_Path("/cache", true))
 return;
