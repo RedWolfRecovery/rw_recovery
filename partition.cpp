@@ -2221,16 +2221,6 @@ bool TWPartition::Wipe_F2FS() {
 		gui_msg(Msg("formatting_using=Formatting {1} using {2}...")(Display_Name)("mkfs.f2fs"));
 		Find_Actual_Block_Device();
 		command = "mkfs.f2fs -t 0";
-		if (!Is_Decrypted && Length != 0) {
-			// Only use length if we're not decrypted
-			char len[32];
-			int mod_length = Length;
-			if (Length < 0)
-				mod_length *= -1;
-			sprintf(len, "%i", mod_length);
-			command += " -r ";
-			command += len;
-		}
 		command += " " + Actual_Block_Device;
 		if (TWFunc::Exec_Cmd(command) == 0) {
 			Recreate_AndSec_Folder();
