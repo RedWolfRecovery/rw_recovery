@@ -204,8 +204,10 @@ int GUISlider::NotifyTouch(TOUCH_STATE state, int x, int y)
 		if (!dragging)
 			return 0;
 
-		if (sCurTouchX >= mRenderX + mRenderW - sTouchW)
+		if (sCurTouchX >= mRenderX + mRenderW - sTouchW) {
+			DataManager::Vibrate("tw_button_vibrate");
 			sAction->doActions();
+                }
 
 		sCurTouchX = mRenderX;
 		dragging = false;

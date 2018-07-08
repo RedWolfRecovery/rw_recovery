@@ -549,7 +549,8 @@ int GUIKeyboard::NotifyTouch(TOUCH_STATE state, int x, int y)
 			bool repeatKey = false;
 			Layout& lay = layouts[currentLayout - 1];
 			if (state == TOUCH_RELEASE && was_held == 0) {
-				if (key.layout > 0) {
+				DataManager::Vibrate("tw_keyboard_vibrate");
+                                if (key.layout > 0) {
 					// Switch layouts
 					if (lay.is_caps && key.layout == lay.revert_layout && !CapsLockOn) {
 						CapsLockOn = true; // Set the caps lock
@@ -592,6 +593,7 @@ int GUIKeyboard::NotifyTouch(TOUCH_STATE state, int x, int y)
 				was_held = 1;
 				if (key.longpresskey > 0) {
 					// Long Press Key	
+					DataManager::Vibrate("tw_keyboard_vibrate");
 					PageManager::NotifyCharInput(key.longpresskey);
 				}
 				else
