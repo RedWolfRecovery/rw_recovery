@@ -400,14 +400,6 @@
 		<string name="fixing_contexts">正在修复 Contexts...</string>
 		<string name="fix_contexts_complete">修复 Context 完成</string>
 		<string name="reboot_hdr">重启</string>
-		<string name="su_install">是否安装 SuperSU？</string>
-		<string name="su_device">安装 SuperSU</string>
-		<string name="su_note1">你的设备可能尚未 root.</string>
-		<string name="su_note2">是否安装 SuperSU？</string>
-		<string name="su_note3">对你的设备进行 root 操作.</string>
-		<string name="su_cancel">不安装</string>
-		<string name="swipe_su_to_install">滑动确认安装</string>
-		<string name="su_installing">正在安装 SuperSU</string>
 		<string name="sel_storage_list">选择存储位置</string>
 		<string name="ok_btn">确定</string>
 

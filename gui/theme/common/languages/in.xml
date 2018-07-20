@@ -388,14 +388,6 @@
 		<string name="fixing_contexts">Perbaikan Konteks...</string>
 		<string name="fix_contexts_complete">Perbaikan konteks selesai</string>
 		<string name="reboot_hdr">Mulai ulang</string>
-		<string name="su_install">Pasang SuperSU?</string>
-		<string name="su_device">Root Perangkat</string>
-		<string name="su_note1">Perangkat Anda tidak memunculkan</string>
-		<string name="su_note2">opsi root. Instal SuperSU sekarang?</string>
-		<string name="su_note3">Aksi ini akan me-root perangkat.</string>
-		<string name="su_cancel">JANGAN PASANG</string>
-		<string name="swipe_su_to_install">Geser untuk Memasang</string>
-		<string name="su_installing">Pemasangan SuperSU</string>
 		<string name="sel_storage_list">Pilih Penyimpanan</string>
 		<string name="ok_btn">OK</string>
 
